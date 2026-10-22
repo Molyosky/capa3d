@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finalizar compra · Pago · Capa3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Capa3D, ir al inicio">Capa3D</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="index.html">Catálogo</a>
+      <a href="seguimiento.html">Mis pedidos</a>
+      <a href="ayuda.html">Ayuda</a>
+      <a class="cart" href="carrito.html">Carrito <span class="count" aria-live="polite">0</span></a>
+    </nav>
+  </header>
+  <main>
+    <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <a href="carrito.html">Carrito</a> <span aria-hidden="true">›</span> <span aria-current="page">Finalizar compra</span></nav>
+    <h1>Finalizar compra</h1>
+    <ol class="steps" aria-label="Pasos de la compra"><li class="done">1. Envío ✓</li><li class="current" aria-current="step">2. Pago</li><li>3. Revisión</li></ol>
+    <div class="cols">
+      <form class="card card-strong stack main-col" onsubmit="location.href='checkout-3-revision.html';return false">
+        <h2>Paso 2 de 3: Forma de pago</h2>
+        <fieldset>
+          <legend>Elige cómo pagar</legend>
+          <div class="pay-group" style="margin-top:8px">
+            <label class="choice"><input type="radio" name="pago" value="transferencia" checked> Transferencia bancaria (subes el comprobante)</label>
+            <label class="choice"><input type="radio" name="pago" value="contra-entrega"> Pago contra entrega (solo Quito)</label>
+          </div>
+        </fieldset>
+        <section class="bank" id="banco" aria-label="Datos para la transferencia">
+          <h3 style="font-size:16px">Transfiere el total a esta cuenta</h3>
+          <dl>
+            <div class="row"><dt>Banco</dt><dd>Banco Pichincha</dd></div>
+            <div class="row"><dt>Tipo de cuenta</dt><dd>Ahorros</dd></div>
+            <div class="row"><dt>Número de cuenta</dt><dd>2205 1234 56</dd></div>
+            <div class="row"><dt>Titular</dt><dd>Capa3D Impresiones 3D</dd></div>
+            <div class="row"><dt>RUC</dt><dd>1790012345001</dd></div>
+            <div class="row strong"><dt>Monto a transferir</dt><dd>$ 0,00</dd></div>
+          </dl>
+          <div class="control"><label for="comp">Número de comprobante *</label><input class="input" id="comp" placeholder="Ej. 004521378" aria-describedby="comp-ayuda"><p class="muted" id="comp-ayuda">Está en el comprobante que te da tu banco al transferir.</p></div>
+        </section>
+        <div class="actions">
+          <a class="btn btn-dashed" href="checkout-1-envio.html">Atrás</a>
+          <button class="btn btn-primary" type="submit">Revisar pedido</button>
+        </div>
+      </form>
+      <aside class="card stack side-col" aria-labelledby="ped">
+        <h2 id="ped">Tu pedido</h2>
+        <dl class="summary">
+          <div><dt>Subtotal</dt><dd>$ 0,00</dd></div>
+          <div><dt>Envío</dt><dd>$ 0,00</dd></div>
+          <div class="total"><dt>Total</dt><dd>$ 0,00</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </main>
+  <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · Reto 4 IHC</footer>
+</div>
+<script>
+  // El recuadro de transferencia solo se muestra si se elige transferencia
+  const banco = document.getElementById('banco');
+  document.querySelectorAll('input[name=pago]').forEach(r => r.addEventListener('change', () => {
+    banco.hidden = r.value !== 'transferencia' || !r.checked;
+  }));
+</script>
+<script src="app.js"></script>
+</body>
+</html>

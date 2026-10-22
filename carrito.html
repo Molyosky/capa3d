@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrito · Capa3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Capa3D, ir al inicio">Capa3D</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="index.html">Catálogo</a>
+      <a href="seguimiento.html">Mis pedidos</a>
+      <a href="ayuda.html">Ayuda</a>
+      <a class="cart" href="carrito.html" aria-current="page">Carrito <span class="count" aria-live="polite">0</span></a>
+    </nav>
+  </header>
+  <main>
+    <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <span aria-current="page">Carrito</span></nav>
+    <h1>Tu carrito</h1>
+    <div class="cols">
+      <section class="card stack main-col" aria-label="Productos del carrito">
+        <p class="note">Tu carrito está vacío.</p>
+        <div><a class="btn" href="index.html">Ir al catálogo</a></div>
+      </section>
+      <aside class="card stack side-col" aria-labelledby="res">
+        <h2 id="res">Resumen</h2>
+        <dl class="summary">
+          <div><dt>Subtotal</dt><dd>$ 0,00</dd></div>
+          <div><dt>Envío</dt><dd>$ 0,00</dd></div>
+          <div class="total"><dt>Total</dt><dd>$ 0,00</dd></div>
+        </dl>
+        <button class="btn btn-block" disabled>Continuar con la compra</button>
+        <p class="muted">Envío gratis desde $30. Tiempo de impresión: 1–3 días.</p>
+      </aside>
+    </div>
+  </main>
+  <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · Reto 4 IHC</footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preguntas frecuentes · Capa3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Capa3D, ir al inicio">Capa3D</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="index.html">Catálogo</a>
+      <a href="seguimiento.html">Mis pedidos</a>
+      <a href="ayuda.html" aria-current="page">Ayuda</a>
+      <a class="cart" href="carrito.html">Carrito <span class="count" aria-live="polite">0</span></a>
+    </nav>
+  </header>
+  <main>
+    <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <span aria-current="page">Ayuda</span></nav>
+    <h1>Preguntas frecuentes</h1>
+    <section class="card faq" aria-label="Preguntas">
+      <details open>
+        <summary>¿PLA o PETG?</summary>
+        <p>PLA es el material estándar: rígido y con buen acabado, para decoración. PETG resiste más golpes y calor, mejor para piezas de uso diario o al aire libre.</p>
+      </details>
+      <details><summary>¿Cuánto se demora mi pedido?</summary><p>El tiempo de impresión es de 1 a 3 días según el producto.</p></details>
+      <details><summary>¿Puedo cancelar?</summary><p>Podrás cancelarlo mientras no empiece la impresión.</p></details>
+      <details><summary>¿Qué pasa si la pieza llega rota?</summary><p>Escríbenos por WhatsApp con una foto y revisamos tu caso.</p></details>
+    </section>
+    <button class="btn btn-dashed" onclick="history.length > 1 ? history.back() : location.href='index.html'">Volver a donde estaba</button>
+  </main>
+  <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · Reto 4 IHC</footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

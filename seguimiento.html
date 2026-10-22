@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estado del pedido · Capa3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Capa3D, ir al inicio">Capa3D</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="index.html">Catálogo</a>
+      <a href="seguimiento.html" aria-current="page">Mis pedidos</a>
+      <a href="ayuda.html">Ayuda</a>
+      <a class="cart" href="carrito.html">Carrito <span class="count" aria-live="polite">0</span></a>
+    </nav>
+  </header>
+  <main>
+    <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <span aria-current="page">Mis pedidos</span></nav>
+    <h1>Estado del pedido C3D-0142</h1>
+    <div class="cols">
+      <ol class="card timeline half" aria-label="Línea de tiempo del pedido">
+        <li><span class="dot done" aria-hidden="true"></span><div><span class="stage">Recibido</span><span class="when">Lun 28 sep, 10:15</span></div></li>
+        <li aria-current="step"><span class="dot now" aria-hidden="true"></span><div><span class="stage">En impresión</span><span class="when">Avance 45 % · faltan aprox. 6 h</span></div></li>
+        <li><span class="dot" aria-hidden="true"></span><div><span class="stage">Acabado y control de calidad</span></div></li>
+        <li><span class="dot" aria-hidden="true"></span><div><span class="stage">Enviado</span></div></li>
+        <li><span class="dot" aria-hidden="true"></span><div><span class="stage">Entregado</span></div></li>
+      </ol>
+      <aside class="card stack half" aria-labelledby="det">
+        <h2 id="det">Detalle</h2>
+        <dl class="summary">
+          <div><dt>Subtotal</dt><dd>$ 12,00</dd></div>
+          <div><dt>Envío</dt><dd>$ 3,50</dd></div>
+          <div class="total"><dt>Total</dt><dd>$ 15,50</dd></div>
+        </dl>
+        <a class="btn btn-dashed btn-block" href="ayuda.html">¿Problemas con tu pedido?</a>
+      </aside>
+    </div>
+  </main>
+  <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · Reto 4 IHC</footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

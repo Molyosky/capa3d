@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avisos y diálogo · Capa3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <div class="showcase">
+    <section aria-labelledby="ov1">
+      <h2 id="ov1">Aviso: producto agregado</h2>
+      <div class="toast" role="status">
+        <p class="title ok">✓ Agregado al carrito</p>
+        <p></p>
+        <div class="actions">
+          <button class="btn btn-dashed">Seguir viendo</button>
+          <a class="btn btn-primary" href="carrito.html">Ver carrito</a>
+        </div>
+      </div>
+    </section>
+    <section aria-labelledby="ov2">
+      <h2 id="ov2">Aviso: producto eliminado</h2>
+      <div class="toast" role="status">
+        <p></p>
+        <div class="actions">
+          <button class="btn btn-dashed">Cerrar</button>
+          <button class="btn btn-primary">Deshacer</button>
+        </div>
+      </div>
+    </section>
+    <section aria-labelledby="ov3" id="dialogo">
+      <h2 id="ov3">Diálogo: ¿Confirmar el pago?</h2>
+      <div class="backdrop">
+        <div class="toast" role="alertdialog" aria-modal="true" aria-labelledby="dlg-t" aria-describedby="dlg-d">
+          <h3 class="title" id="dlg-t" style="color:var(--texto)">¿Confirmar el pago?</h3>
+          <p id="dlg-d">Se registrará tu pedido por el total indicado con transferencia bancaria. Podrás cancelarlo mientras no empiece la impresión.</p>
+          <div class="actions">
+            <a class="btn btn-dashed" href="checkout-3-revision.html">Revisar de nuevo</a>
+            <a class="btn btn-primary" href="confirmacion.html">Sí, confirmar</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

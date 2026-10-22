@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finalizar compra · Envío · Capa3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Capa3D, ir al inicio">Capa3D</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="index.html">Catálogo</a>
+      <a href="seguimiento.html">Mis pedidos</a>
+      <a href="ayuda.html">Ayuda</a>
+      <a class="cart" href="carrito.html">Carrito <span class="count" aria-live="polite">0</span></a>
+    </nav>
+  </header>
+  <main>
+    <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <a href="carrito.html">Carrito</a> <span aria-hidden="true">›</span> <span aria-current="page">Finalizar compra</span></nav>
+    <h1>Finalizar compra</h1>
+    <ol class="steps" aria-label="Pasos de la compra"><li class="current" aria-current="step">1. Envío</li><li>2. Pago</li><li>3. Revisión</li></ol>
+    <div class="cols">
+      <form class="card card-strong stack main-col" onsubmit="location.href='checkout-2-pago.html';return false">
+        <h2>Paso 1 de 3: Datos de envío</h2>
+        <p class="muted">Los campos con * son obligatorios.</p>
+        <div class="control"><label for="nombre">Nombre completo *</label><input class="input" id="nombre" required autocomplete="name"></div>
+        <div class="control"><label for="cel">Celular *</label><input class="input" id="cel" required inputmode="numeric" pattern="[0-9]{10}" placeholder="09XXXXXXXX" aria-describedby="cel-ayuda" autocomplete="tel"><p class="muted" id="cel-ayuda">10 dígitos. Te avisaremos por WhatsApp cuando se envíe.</p></div>
+        <div class="control"><label for="ciudad">Ciudad *</label><select class="input" id="ciudad" required><option value="">Selecciona…</option><option>Quito</option><option>Guayaquil</option><option>Cuenca</option></select></div>
+        <div class="control"><label for="dir">Dirección *</label><textarea class="input" id="dir" required autocomplete="street-address"></textarea></div>
+        <div class="actions">
+          <a class="btn btn-dashed" href="carrito.html">Volver al carrito</a>
+          <button class="btn btn-primary" type="submit">Continuar al pago</button>
+        </div>
+      </form>
+      <aside class="card stack side-col" aria-labelledby="ped">
+        <h2 id="ped">Tu pedido</h2>
+        <dl class="summary">
+          <div><dt>Subtotal</dt><dd>$ 0,00</dd></div>
+          <div><dt>Envío</dt><dd>$ 0,00</dd></div>
+          <div class="total"><dt>Total</dt><dd>$ 0,00</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </main>
+  <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · Reto 4 IHC</footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
