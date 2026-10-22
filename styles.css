@@ -524,3 +524,7 @@ dialog.toast::backdrop { background: rgba(0, 0, 0, .35); }
 .cart-item img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; }
 .cart-item .info { flex: 1 1 180px; }
 .cart-item h3 { font-size: 16px; }
+
+.error { color: var(--error); font-weight: 600; }
+.error-box { border-left-color: var(--error); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; }
+.cart-item .error { flex-basis: 100%; }

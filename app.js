@@ -25,6 +25,28 @@
     const monto = $('#banco .strong dd'); if (monto) monto.textContent = dinero(t.total);
   };
   const guardarCarrito = () => { guardar('c3d-carrito', carrito); pintarResumen(); };
+  const MAX = 10, avisoMax = `Llegaste al máximo de ${MAX} unidades por producto.`;
+
+  // ---------- Cuenta o invitado (prototipo: solo se guarda el correo, nunca la contraseña) ----------
+  const cuenta = leer('c3d-cuenta', null);
+  const puedeComprar = () => !!cuenta || leer('c3d-invitado', false);
+  if (cuenta) $$('.nav a[href="login.html"]').forEach(a => a.textContent = 'Mi cuenta');
+  if (pagina === 'login.html') {
+    const sig = new URLSearchParams(location.search).get('next');
+    const destino = sig && /^[\w-]+\.html$/.test(sig) ? sig : 'index.html'; // solo páginas propias
+    $('#para-comprar').hidden = !sig;
+    if (cuenta) {
+      $('#entrar').hidden = $('#invitado').hidden = true; $('#sesion').hidden = false;
+      $('#titulo').textContent = 'Mi cuenta'; $('#quien').textContent = cuenta.correo;
+    }
+    $('#entrar').addEventListener('submit', e => {
+      e.preventDefault();
+      guardar('c3d-cuenta', { correo: $('#correo').value.trim() });
+      location.href = destino;
+    });
+    $('#btn-invitado').onclick = () => { guardar('c3d-invitado', true); location.href = sig ? destino : 'index.html'; };
+    $('#salir').onclick = () => { localStorage.removeItem('c3d-cuenta'); location.reload(); };
+  }
 
   // Aviso (toast) o diálogo modal hecho con <dialog>
   function aviso({ titulo, texto, botones, modal }) {
@@ -62,6 +84,15 @@
 
   // ---------- Detalle: agregar al carrito ----------
   const opciones = $('form.options');
+  if (opciones) {
+    // Error de máximo 10: se lee la cantidad antes de que el botón + la cambie (fase de captura)
+    const ayuda = $('#cant-ayuda'), textoAyuda = ayuda.textContent;
+    $('.options .qty').addEventListener('click', e => {
+      const lleno = e.target.id === 'mas' && +$('#cant').textContent >= MAX;
+      ayuda.textContent = lleno ? avisoMax : textoAyuda;
+      ayuda.classList.toggle('error', lleno);
+    }, true);
+  }
   if (opciones) opciones.addEventListener('submit', e => {
     e.preventDefault();
     const elegidas = $$('form.options input[type=radio]:checked').map(r => r.value);
@@ -75,19 +106,23 @@
       cant: +$('#cant').textContent,
     };
     const igual = carrito.find(i => i.nombre === item.nombre && i.opciones === item.opciones);
-    if (igual) igual.cant = Math.min(10, igual.cant + item.cant); else carrito.push(item);
+    const tope = igual && igual.cant + item.cant > MAX;
+    if (igual) igual.cant = Math.min(MAX, igual.cant + item.cant); else carrito.push(item);
     guardarCarrito();
     aviso({
       titulo: '✓ Agregado al carrito',
-      texto: `${item.cant} × ${item.nombre} (${item.opciones}) — ${dinero(item.precio * item.cant)}`,
-      botones: [['Seguir viendo', 'btn-dashed'], ['Ver carrito', 'btn-primary', () => location.href = 'carrito.html']],
+      texto: `${item.cant} × ${item.nombre} (${item.opciones}) — ${dinero(item.precio * item.cant)}` +
+        (tope ? `. Ya tenías este producto: quedaron ${MAX} en el carrito, que es el máximo.` : ''),
+      // Los dos "Seguir viendo" llevan al mismo lugar: el catálogo filtrado por la categoría
+      botones: [['Seguir viendo', 'btn-dashed', () => location.href = $('#seguir').href], ['Ver carrito', 'btn-primary', () => location.href = 'carrito.html']],
     });
   });
 
   // ---------- Carrito ----------
   if (pagina === 'carrito.html') {
     const lista = $('.main-col'), vacio = lista.innerHTML, seguir = $('.side-col .btn');
-    seguir.onclick = () => location.href = 'checkout-1-envio.html';
+    // Decisión antes del envío: con cuenta o como invitado
+    seguir.onclick = () => location.href = puedeComprar() ? 'checkout-1-envio.html' : 'login.html?next=checkout-1-envio.html';
     const pintar = () => {
       seguir.disabled = !carrito.length;
       if (!carrito.length) { lista.innerHTML = vacio; return; }
@@ -97,7 +132,8 @@
         fila.className = 'cart-item';
         fila.innerHTML = `<img alt=""><div class="info"><h3></h3><p class="muted"></p><p class="price"></p></div>
           <div class="qty" role="group"><button type="button" class="btn" aria-label="Quitar una unidad">−</button><output aria-live="polite"></output><button type="button" class="btn" aria-label="Agregar una unidad">+</button></div>
-          <button type="button" class="btn btn-dashed">Eliminar</button>`;
+          <button type="button" class="btn btn-dashed">Eliminar</button>
+          <p class="error" role="alert" hidden></p>`;
         fila.querySelector('img').src = i.img;
         fila.querySelector('h3').textContent = i.nombre;
         fila.querySelector('.muted').textContent = i.opciones + ' · ' + dinero(i.precio) + ' c/u';
@@ -107,7 +143,10 @@
         const [menos, mas, quitar] = fila.querySelectorAll('button');
         quitar.setAttribute('aria-label', 'Eliminar ' + i.nombre);
         menos.onclick = () => { i.cant = Math.max(1, i.cant - 1); guardarCarrito(); pintar(); };
-        mas.onclick = () => { i.cant = Math.min(10, i.cant + 1); guardarCarrito(); pintar(); };
+        mas.onclick = () => {
+          if (i.cant >= MAX) { const err = fila.querySelector('.error'); err.textContent = avisoMax; err.hidden = false; return; }
+          i.cant++; guardarCarrito(); pintar();
+        };
         quitar.onclick = () => {
           carrito.splice(n, 1); guardarCarrito(); pintar();
           aviso({ texto: `Eliminaste ${i.nombre} del carrito.`, botones: [['Cerrar', 'btn-dashed'], ['Deshacer', 'btn-primary', () => { carrito.splice(n, 0, i); guardarCarrito(); pintar(); }]] });
@@ -120,6 +159,7 @@
 
   // ---------- Checkout ----------
   if (pagina.startsWith('checkout-') && !carrito.length) location.replace('carrito.html');
+  else if (pagina.startsWith('checkout-') && !puedeComprar()) location.replace('login.html?next=' + pagina);
   const envio = leer('c3d-envio', {}), pago = leer('c3d-pago', { metodo: 'transferencia', comp: '' });
   const campos = ['nombre', 'cel', 'ciudad', 'dir'];
 
@@ -158,7 +198,7 @@
         texto: `Se registrará tu pedido por ${dinero(t.total)} con ${nombrePago(pago.metodo).toLowerCase()}. Podrás cancelarlo mientras no empiece la impresión.`,
         botones: [['Revisar de nuevo', 'btn-dashed'], ['Sí, confirmar', 'btn-primary', () => {
           guardar('c3d-pedido', { numero: 'C3D-' + String(Date.now() % 10000).padStart(4, '0'), fecha: Date.now(), ...t });
-          carrito = []; guardarCarrito();
+          carrito = []; guardarCarrito(); localStorage.removeItem('c3d-invitado');
           location.href = 'confirmacion.html';
         }]],
       });

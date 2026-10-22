@@ -17,6 +17,7 @@
       <a href="index.html" aria-current="page">Catálogo</a>
       <a href="seguimiento.html">Mis pedidos</a>
       <a href="ayuda.html">Ayuda</a>
+      <a href="login.html">Iniciar sesión</a>
       <a class="cart" href="carrito.html">Carrito <span class="count" aria-live="polite">0</span></a>
     </nav>
   </header>
@@ -43,6 +44,10 @@
       </div>
     </form>
     <p class="muted" id="conteo" aria-live="polite">Mostrando 5 productos</p>
+    <div class="note error-box" id="vacio" role="alert" hidden>
+      <p>No encontramos productos con esa búsqueda. Revisa cómo lo escribiste o prueba con otra categoría.</p>
+      <button type="button" class="btn" id="limpiar">Ver todos los productos</button>
+    </div>
     <div class="grid" id="grid">
       <a class="product-card" href="detalle-dragon-articulado.html" aria-label="Dragón articulado, ver detalle">
         <div class="photo"><img src="img/cat-dragon.png" alt="Dragón articulado"></div>
@@ -95,8 +100,13 @@
       el.hidden = !ok; if (ok) n++;
     });
     conteo.textContent = 'Mostrando ' + n + (n === 1 ? ' producto' : ' productos');
+    document.getElementById('vacio').hidden = n > 0;
   }
   q.addEventListener('input', filtrar); cat.addEventListener('change', filtrar);
+  document.getElementById('limpiar').onclick = () => { q.value = ''; cat.value = ''; filtrar(); q.focus(); };
+  // Entrada desde la ruta superior del detalle: index.html?cat=Macetas abre el catálogo filtrado
+  const pedida = new URLSearchParams(location.search).get('cat');
+  if ([...cat.options].some(o => o.value === pedida)) { cat.value = pedida; filtrar(); }
 </script>
 <script src="app.js"></script>
 </body>

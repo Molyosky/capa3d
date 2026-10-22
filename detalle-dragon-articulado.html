@@ -17,11 +17,12 @@
       <a href="index.html" aria-current="page">Catálogo</a>
       <a href="seguimiento.html">Mis pedidos</a>
       <a href="ayuda.html">Ayuda</a>
+      <a href="login.html">Iniciar sesión</a>
       <a class="cart" href="carrito.html">Carrito <span class="count" aria-live="polite">0</span></a>
     </nav>
   </header>
   <main>
-    <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <span>Figuras</span> <span aria-hidden="true">›</span> <span aria-current="page">Dragón articulado</span></nav>
+    <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <a href="index.html?cat=Figuras">Figuras</a> <span aria-hidden="true">›</span> <span aria-current="page">Dragón articulado</span></nav>
     <div class="detail">
       <div class="gallery" aria-label="Galería de Dragón articulado">
         <div class="photo">
@@ -72,11 +73,11 @@
             <output id="cant" aria-live="polite">1</output>
             <button type="button" class="btn" id="mas" aria-label="Agregar una unidad">+</button>
           </div>
-          <p class="muted">Entre 1 y 10 unidades.</p>
+          <p class="muted" id="cant-ayuda" aria-live="polite">Entre 1 y 10 unidades.</p>
         </div>
         <div class="actions">
           <button type="submit" class="btn btn-primary" style="min-width:197px;height:49px">Agregar al carrito</button>
-          <a class="btn btn-dashed" href="index.html" style="height:49px">Seguir viendo</a>
+          <a class="btn btn-dashed" id="seguir" href="index.html?cat=Figuras" style="height:49px">Seguir viendo</a>
         </div>
       </form>
     </div>
