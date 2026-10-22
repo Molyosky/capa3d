@@ -47,7 +47,8 @@ flowchart TD
   CAT -- "busca o filtra" --> D0{"¿Hay resultados?"}:::decision
   D0 -- "No" --> X0["Sin resultados · Ver todos los productos"]:::error --> CAT
   D0 -- "Sí" --> DET["Detalle del producto: material, tamaño, color, cantidad"]:::pantalla
-  DET -- "Seguir viendo o ruta superior" --> CATF["Catálogo filtrado por categoría"]:::pantalla
+  DET -- "Seguir viendo" --> CAT
+  DET -- "ruta superior: categoría" --> CATF["Catálogo filtrado por categoría"]:::pantalla
   CATF --> DET
   DET -- "Agregar al carrito" --> CAR["Carrito"]:::pantalla
   CAR -. "más de 10" .-> X2["Llegaste al máximo de 10"]:::error --> CAR

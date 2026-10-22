@@ -113,7 +113,7 @@
       titulo: '✓ Agregado al carrito',
       texto: `${item.cant} × ${item.nombre} (${item.opciones}) — ${dinero(item.precio * item.cant)}` +
         (tope ? `. Ya tenías este producto: quedaron ${MAX} en el carrito, que es el máximo.` : ''),
-      // Los dos "Seguir viendo" llevan al mismo lugar: el catálogo filtrado por la categoría
+      // Los dos "Seguir viendo" llevan al mismo lugar: el catálogo con todos los productos
       botones: [['Seguir viendo', 'btn-dashed', () => location.href = $('#seguir').href], ['Ver carrito', 'btn-primary', () => location.href = 'carrito.html']],
     });
   });
