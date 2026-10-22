@@ -130,12 +130,12 @@
       carrito.forEach((i, n) => {
         const fila = document.createElement('article');
         fila.className = 'cart-item';
-        fila.innerHTML = `<img alt=""><div class="info"><h2></h2><p class="muted"></p><p class="price"></p></div>
+        fila.innerHTML = `<img alt=""><div class="info"><h3></h3><p class="muted"></p><p class="price"></p></div>
           <div class="qty" role="group"><button type="button" class="btn" aria-label="Quitar una unidad">−</button><output aria-live="polite"></output><button type="button" class="btn" aria-label="Agregar una unidad">+</button></div>
           <button type="button" class="btn btn-dashed">Eliminar</button>
           <p class="error" role="alert" hidden></p>`;
         fila.querySelector('img').src = i.img;
-        fila.querySelector('h2').textContent = i.nombre;
+        fila.querySelector('h3').textContent = i.nombre;
         fila.querySelector('.muted').textContent = i.opciones + ' · ' + dinero(i.precio) + ' c/u';
         fila.querySelector('.price').textContent = dinero(i.precio * i.cant);
         fila.querySelector('output').textContent = i.cant;

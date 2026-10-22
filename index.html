@@ -10,7 +10,6 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<a class="skip" href="#contenido">Saltar al contenido principal</a>
 <div class="page">
   <header class="site-header">
     <a class="logo" href="index.html" aria-label="Capa3D, ir al inicio">Capa3D</a>
@@ -22,10 +21,10 @@
       <a class="cart" href="carrito.html">Carrito <span class="count" aria-live="polite">0</span></a>
     </nav>
   </header>
-  <main id="contenido">
+  <main>
     <nav class="breadcrumb" aria-label="Migas de pan"><span aria-current="page">Inicio</span></nav>
     <h1>Catálogo de productos impresos en 3D</h1>
-    <form class="filters" role="search" onsubmit="filtrar(); return false">
+    <form class="filters" role="search" onsubmit="return false">
       <div class="control grow">
         <label for="q">Buscar producto</label>
         <input class="input" id="q" type="search" placeholder="Ej. maceta, dragón, soporte" aria-describedby="q-ayuda" autocomplete="off">
@@ -43,9 +42,6 @@
           <option>Más vendidos</option><option>Menor precio</option><option>Mayor precio</option>
         </select>
       </div>
-      <div class="control fixed buscar">
-        <button type="submit" class="btn btn-primary">Buscar</button>
-      </div>
     </form>
     <p class="muted" id="conteo" aria-live="polite">Mostrando 5 productos</p>
     <div class="note error-box" id="vacio" role="alert" hidden>
@@ -54,36 +50,36 @@
     </div>
     <div class="grid" id="grid">
       <a class="product-card" href="detalle-dragon-articulado.html" aria-label="Dragón articulado, ver detalle">
-        <div class="photo"><img src="img/cat-dragon.png" alt=""></div>
-        <h2 class="card-title">Dragón articulado</h2>
+        <div class="photo"><img src="img/cat-dragon.png" alt="Dragón articulado"></div>
+        <h3>Dragón articulado</h3>
         <div class="tags"><span class="tag">Figuras</span><span class="muted">Listo en 2 días</span></div>
         <p class="price">$ 12,00</p>
         <span class="btn btn-block">Ver detalle</span>
       </a>
       <a class="product-card" href="detalle-maceta-geometrica.html" aria-label="Maceta geométrica, ver detalle">
-        <div class="photo"><img src="img/cat-maceta.png" alt=""></div>
-        <h2 class="card-title">Maceta geométrica</h2>
+        <div class="photo"><img src="img/cat-maceta.png" alt="Maceta geométrica"></div>
+        <h3>Maceta geométrica</h3>
         <div class="tags"><span class="tag">Macetas</span><span class="muted">Listo en 1 día</span></div>
         <p class="price">$ 8,00</p>
         <span class="btn btn-block">Ver detalle</span>
       </a>
       <a class="product-card" href="detalle-soporte-celular.html" aria-label="Soporte para celular, ver detalle">
-        <div class="photo"><img src="img/cat-celular.png" alt=""></div>
-        <h2 class="card-title">Soporte para celular</h2>
+        <div class="photo"><img src="img/cat-celular.png" alt="Soporte para celular"></div>
+        <h3>Soporte para celular</h3>
         <div class="tags"><span class="tag">Soporte</span><span class="muted">Listo en 1 día</span></div>
         <p class="price">$ 6,00</p>
         <span class="btn btn-block">Ver detalle</span>
       </a>
       <a class="product-card" href="detalle-busto-decorativo.html" aria-label="Busto decorativo, ver detalle">
-        <div class="photo"><img src="img/cat-busto.png" alt=""></div>
-        <h2 class="card-title">Busto decorativo</h2>
+        <div class="photo"><img src="img/cat-busto.png" alt="Busto decorativo"></div>
+        <h3>Busto decorativo</h3>
         <div class="tags"><span class="tag">Figuras</span><span class="muted">Listo en 3 días</span></div>
         <p class="price">$ 18,00</p>
         <span class="btn btn-block">Ver detalle</span>
       </a>
       <a class="product-card" href="detalle-mini-soporte-laptop.html" aria-label="Mini soporte de laptop, ver detalle">
-        <div class="photo"><img src="img/cat-minilaptop.png" alt=""></div>
-        <h2 class="card-title">Mini soporte de laptop</h2>
+        <div class="photo"><img src="img/cat-minilaptop.png" alt="Mini soporte de laptop"></div>
+        <h3>Mini soporte de laptop</h3>
         <div class="tags"><span class="tag">Soporte</span><span class="muted">Listo en 1 día</span></div>
         <p class="price">$ 18,00</p>
         <span class="btn btn-block">Ver detalle</span>
