@@ -515,9 +515,8 @@ legend + * { clear: both; }
 
 [hidden] { display: none !important; }
 
-dialog.toast { position: fixed; inset: auto 20px 20px auto; margin: 0; color: var(--texto); z-index: 10; box-shadow: 0 8px 24px rgba(0, 0, 0, .2); }
+dialog.toast { position: fixed; inset: 0; margin: auto; height: fit-content; color: var(--texto); z-index: 10; box-shadow: 0 8px 24px rgba(0, 0, 0, .2); }
 dialog.toast:not([open]) { display: none; }
-dialog.toast.modal { inset: 0; margin: auto; height: fit-content; }
 dialog.toast::backdrop { background: rgba(0, 0, 0, .35); }
 
 .cart-item { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--linea); }
@@ -527,7 +526,7 @@ dialog.toast::backdrop { background: rgba(0, 0, 0, .35); }
 
 .error { color: var(--error); font-weight: 600; }
 .error-box { border-left-color: var(--error); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; }
-.cart-item .error { flex-basis: 100%; }
+.cart-item .cant { display: flex; flex-direction: column; gap: 4px; max-width: 190px; }
 
 /* ---------- Flujo de usuario ---------- */
 
@@ -541,3 +540,13 @@ dialog.toast::backdrop { background: rgba(0, 0, 0, .35); }
 .sym.decision { width: 16px; height: 16px; margin: 0 6px; background: var(--crema); border-color: var(--grafito); border-radius: 0; transform: rotate(45deg); }
 .sym.error { background: #fdecea; border: 2px dashed var(--error); }
 .sym.final { background: var(--verde); border-color: var(--verde); border-radius: 9px; }
+
+/* ---------- Iniciar sesión (centrado) ---------- */
+
+.login { display: flex; flex-direction: column; gap: 14px; width: 440px; max-width: 100%; margin: 0 auto; }
+.login h1 { text-align: center; }
+.login #para-comprar { text-align: center; }
+.btn-google { gap: 10px; }
+.btn-google .g { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--grafito); color: #fff; font-weight: 700; font-size: 14px; }
+.divider { display: flex; align-items: center; gap: 10px; color: var(--texto-2); font-size: 14px; }
+.divider::before, .divider::after { content: ""; flex: 1; border-top: 1px solid var(--linea); }

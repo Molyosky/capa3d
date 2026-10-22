@@ -23,22 +23,20 @@
   </header>
   <main>
     <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <span aria-current="page">Iniciar sesión</span></nav>
-    <h1 id="titulo">Iniciar sesión</h1>
-    <p class="muted" id="para-comprar" hidden>Para continuar con tu compra, inicia sesión o compra como invitado.</p>
-    <div class="cols">
-      <form class="card card-strong stack side-col" id="entrar" aria-labelledby="t-cuenta">
-        <h2 id="t-cuenta">Tengo una cuenta</h2>
+    <div class="login">
+      <h1 id="titulo">Iniciar sesión</h1>
+      <p class="muted" id="para-comprar" hidden>Para continuar con tu compra, inicia sesión.</p>
+      <div class="card card-strong stack" id="entrar">
+        <button class="btn btn-block btn-google" type="button" id="btn-google"><span class="g" aria-hidden="true">G</span> Continuar con Google</button>
+        <p class="divider"><span>o con tu correo</span></p>
+        <form class="stack" id="form-correo" aria-label="Iniciar sesión con correo">
+          <div class="control"><label for="correo">Correo electrónico *</label><input class="input" id="correo" type="email" required autocomplete="email" placeholder="tucorreo@ejemplo.com"></div>
+          <div class="control"><label for="clave">Contraseña *</label><input class="input" id="clave" type="password" required minlength="6" autocomplete="current-password" aria-describedby="clave-ayuda"><p class="muted" id="clave-ayuda">Mínimo 6 caracteres. Prototipo: la contraseña no se guarda.</p></div>
+          <button class="btn btn-primary btn-block" type="submit">Iniciar sesión</button>
+        </form>
         <p class="muted">Tus datos de envío quedan guardados para la próxima compra.</p>
-        <div class="control"><label for="correo">Correo electrónico *</label><input class="input" id="correo" type="email" required autocomplete="email" placeholder="tucorreo@ejemplo.com"></div>
-        <div class="control"><label for="clave">Contraseña *</label><input class="input" id="clave" type="password" required minlength="6" autocomplete="current-password" aria-describedby="clave-ayuda"><p class="muted" id="clave-ayuda">Mínimo 6 caracteres. Prototipo: la contraseña no se guarda.</p></div>
-        <button class="btn btn-primary btn-block" type="submit">Iniciar sesión</button>
-      </form>
-      <section class="card stack side-col" id="invitado" aria-labelledby="t-inv">
-        <h2 id="t-inv">Comprar como invitado</h2>
-        <p class="muted">No necesitas crear una cuenta. Solo te pediremos los datos de envío.</p>
-        <button class="btn btn-dashed btn-block" type="button" id="btn-invitado">Continuar como invitado</button>
-      </section>
-      <section class="card stack side-col" id="sesion" aria-labelledby="t-ses" hidden>
+      </div>
+      <section class="card stack" id="sesion" aria-labelledby="t-ses" hidden>
         <h2 id="t-ses">Sesión iniciada</h2>
         <p>Entraste como <strong id="quien"></strong>.</p>
         <a class="btn btn-primary btn-block" href="seguimiento.html">Ver mis pedidos</a>

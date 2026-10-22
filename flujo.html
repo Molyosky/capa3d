@@ -53,9 +53,9 @@ flowchart TD
   DET -- "Agregar al carrito" --> CAR["Carrito"]:::pantalla
   CAR -. "más de 10" .-> X2["Llegaste al máximo de 10"]:::error --> CAR
   CAR -. "vacío" .-> X1["Carrito vacío · Ir al catálogo"]:::error --> CAT
-  CAR -- "Continuar con la compra" --> D1{"¿Con cuenta o invitado?"}:::decision
-  D1 -- "Con cuenta" --> LOG["Iniciar sesión"]:::pantalla --> ENV
-  D1 -- "Invitado" --> ENV["Paso 1 de 3 · Envío"]:::pantalla
+  CAR -- "Continuar con la compra" --> D1{"¿Ya inició sesión?"}:::decision
+  D1 -- "No" --> LOG["Iniciar sesión: Google o correo"]:::pantalla --> ENV
+  D1 -- "Sí" --> ENV["Paso 1 de 3 · Envío"]:::pantalla
   ENV -. "faltan datos" .-> X3["Faltan datos · se marca el campo"]:::error --> ENV
   ENV --> PAG["Paso 2 de 3 · Pago"]:::pantalla
   PAG --> D2{"¿Forma de pago?"}:::decision
@@ -79,14 +79,14 @@ flowchart TD
 
     <section class="card stack flow" aria-labelledby="t-f2">
       <h2 id="t-f2">Flujo 2 · Iniciar sesión</h2>
-      <p class="muted"><strong>Meta:</strong> entrar a mi cuenta para que mis datos queden guardados, o seguir sin cuenta.</p>
+      <p class="muted"><strong>Meta:</strong> entrar a mi cuenta con Google o con mi correo para comprar y que mis datos queden guardados.</p>
       <pre class="mermaid">
 flowchart TD
   E1(["Entrada: menú Iniciar sesión"]):::entrada --> LOG["Iniciar sesión"]:::pantalla
-  E2(["Entrada: Continuar con la compra sin cuenta"]):::entrada --> LOG
-  LOG --> D0{"¿Con cuenta o invitado?"}:::decision
-  D0 -- "Invitado" --> INV(["Paso 1 de 3 · Envío"]):::final
-  D0 -- "Con cuenta" --> D1{"¿Correo y contraseña válidos?"}:::decision
+  E2(["Entrada: Continuar con la compra sin sesión"]):::entrada --> LOG
+  LOG --> D0{"¿Cómo entra?"}:::decision
+  D0 -- "Google" --> D2
+  D0 -- "Correo" --> D1{"¿Correo y contraseña válidos?"}:::decision
   D1 -- "No" --> X1["Revisa el correo · contraseña de 6 caracteres o más"]:::error --> LOG
   D1 -- "Sí" --> D2{"¿Venía de la compra?"}:::decision
   D2 -- "Sí" --> ENV(["Vuelve a la compra · Paso 1 de 3"]):::final
