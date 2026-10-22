@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flujo de usuario · Capa3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Capa3D, ir al inicio">Capa3D</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="index.html">Catálogo</a>
+      <a href="seguimiento.html">Mis pedidos</a>
+      <a href="ayuda.html">Ayuda</a>
+      <a href="login.html">Iniciar sesión</a>
+      <a class="cart" href="carrito.html">Carrito <span class="count" aria-live="polite">0</span></a>
+    </nav>
+  </header>
+  <main>
+    <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <span aria-current="page">Flujo de usuario</span></nav>
+    <h1>Flujo de usuario de Capa3D</h1>
+    <p>Este flujo se dibujó <strong>antes</strong> de ajustar las pantallas, siguiendo los 5 pasos de Figma: usuario y meta, punto de entrada, pasos, puntos de decisión y punto final. Está separado en <strong>3 flujos con una sola meta cada uno</strong>.</p>
+
+    <section class="card stack" aria-labelledby="t-ley">
+      <h2 id="t-ley">Símbolos</h2>
+      <ul class="legend">
+        <li><span class="sym entrada" aria-hidden="true"></span> Punto de entrada</li>
+        <li><span class="sym pantalla" aria-hidden="true"></span> Pantalla</li>
+        <li><span class="sym decision" aria-hidden="true"></span> Decisión (rombo)</li>
+        <li><span class="sym error" aria-hidden="true"></span> Error (rojo punteado) con salida</li>
+        <li><span class="sym final" aria-hidden="true"></span> Punto final (éxito)</li>
+      </ul>
+    </section>
+
+    <section class="card stack flow" aria-labelledby="t-f1">
+      <h2 id="t-f1">Flujo 1 · Comprar una pieza impresa</h2>
+      <p class="muted"><strong>Usuario:</strong> cliente que quiere una pieza impresa en 3D, con poca experiencia comprando en línea. <strong>Meta:</strong> comprar la pieza y saber cuándo llega. <strong>Tarea de prueba:</strong> 1 Dragón articulado PETG rojo 30 cm con transferencia.</p>
+      <pre class="mermaid">
+flowchart TD
+  E1(["Entrada: Catálogo"]):::entrada --> CAT["Catálogo"]:::pantalla
+  E2(["Entrada: enlace directo a un producto (WhatsApp)"]):::entrada --> DET
+  CAT -- "busca o filtra" --> D0{"¿Hay resultados?"}:::decision
+  D0 -- "No" --> X0["Sin resultados · Ver todos los productos"]:::error --> CAT
+  D0 -- "Sí" --> DET["Detalle del producto: material, tamaño, color, cantidad"]:::pantalla
+  DET -- "Seguir viendo o ruta superior" --> CATF["Catálogo filtrado por categoría"]:::pantalla
+  CATF --> DET
+  DET -- "Agregar al carrito" --> CAR["Carrito"]:::pantalla
+  CAR -. "más de 10" .-> X2["Llegaste al máximo de 10"]:::error --> CAR
+  CAR -. "vacío" .-> X1["Carrito vacío · Ir al catálogo"]:::error --> CAT
+  CAR -- "Continuar con la compra" --> D1{"¿Con cuenta o invitado?"}:::decision
+  D1 -- "Con cuenta" --> LOG["Iniciar sesión"]:::pantalla --> ENV
+  D1 -- "Invitado" --> ENV["Paso 1 de 3 · Envío"]:::pantalla
+  ENV -. "faltan datos" .-> X3["Faltan datos · se marca el campo"]:::error --> ENV
+  ENV --> PAG["Paso 2 de 3 · Pago"]:::pantalla
+  PAG --> D2{"¿Forma de pago?"}:::decision
+  D2 -- "Transferencia" --> TRF["Datos bancarios y número de comprobante"]:::pantalla
+  TRF -. "falta comprobante" .-> X4["Falta el comprobante"]:::error --> TRF
+  D2 -- "Contra entrega (solo Quito)" --> REV
+  TRF --> REV["Paso 3 de 3 · Revisión"]:::pantalla
+  REV -- "editar el envío" --> ENV
+  REV -- "cambiar el pago" --> PAG
+  REV -- "Confirmar y pagar" --> D3{"¿Confirmar el pago?"}:::decision
+  D3 -- "Revisar de nuevo" --> REV
+  D3 -- "Sí, confirmar" --> OK(["Pedido recibido · número de pedido"]):::final
+  OK -- "Ver estado del pedido" --> MP(["Mis pedidos"]):::final
+  classDef entrada fill:#1f2a24,stroke:#1f2a24,color:#fff
+  classDef pantalla fill:#e6f2ea,stroke:#17703f,stroke-width:2px,color:#1f2a24
+  classDef decision fill:#fffdf9,stroke:#1f2a24,stroke-width:2px,color:#1f2a24
+  classDef error fill:#fdecea,stroke:#b42318,stroke-width:2px,stroke-dasharray:6 4,color:#b42318
+  classDef final fill:#17703f,stroke:#17703f,color:#fff
+      </pre>
+    </section>
+
+    <section class="card stack flow" aria-labelledby="t-f2">
+      <h2 id="t-f2">Flujo 2 · Iniciar sesión</h2>
+      <p class="muted"><strong>Meta:</strong> entrar a mi cuenta para que mis datos queden guardados, o seguir sin cuenta.</p>
+      <pre class="mermaid">
+flowchart TD
+  E1(["Entrada: menú Iniciar sesión"]):::entrada --> LOG["Iniciar sesión"]:::pantalla
+  E2(["Entrada: Continuar con la compra sin cuenta"]):::entrada --> LOG
+  LOG --> D0{"¿Con cuenta o invitado?"}:::decision
+  D0 -- "Invitado" --> INV(["Paso 1 de 3 · Envío"]):::final
+  D0 -- "Con cuenta" --> D1{"¿Correo y contraseña válidos?"}:::decision
+  D1 -- "No" --> X1["Revisa el correo · contraseña de 6 caracteres o más"]:::error --> LOG
+  D1 -- "Sí" --> D2{"¿Venía de la compra?"}:::decision
+  D2 -- "Sí" --> ENV(["Vuelve a la compra · Paso 1 de 3"]):::final
+  D2 -- "No" --> MC(["Mi cuenta · sesión iniciada"]):::final
+  MC -- "Cerrar sesión" --> LOG
+  classDef entrada fill:#1f2a24,stroke:#1f2a24,color:#fff
+  classDef pantalla fill:#e6f2ea,stroke:#17703f,stroke-width:2px,color:#1f2a24
+  classDef decision fill:#fffdf9,stroke:#1f2a24,stroke-width:2px,color:#1f2a24
+  classDef error fill:#fdecea,stroke:#b42318,stroke-width:2px,stroke-dasharray:6 4,color:#b42318
+  classDef final fill:#17703f,stroke:#17703f,color:#fff
+      </pre>
+    </section>
+
+    <section class="card stack flow" aria-labelledby="t-f3">
+      <h2 id="t-f3">Flujo 3 · Ver mi pedido</h2>
+      <p class="muted"><strong>Meta:</strong> saber en qué etapa está mi pieza y cuándo llega.</p>
+      <pre class="mermaid">
+flowchart TD
+  E1(["Entrada: menú Mis pedidos"]):::entrada --> MP["Mis pedidos · línea de tiempo"]:::pantalla
+  E2(["Entrada: Pedido recibido · Ver estado"]):::entrada --> MP
+  E3(["Entrada: aviso por WhatsApp"]):::entrada --> MP
+  MP --> D1{"¿Todo bien con el pedido?"}:::decision
+  D1 -- "No · ¿Problemas con tu pedido?" --> AY["Ayuda · preguntas frecuentes"]:::pantalla
+  AY -- "Volver a donde estaba" --> MP
+  D1 -- "Sí" --> S1["Recibido"]:::pantalla --> S2["En impresión"]:::pantalla --> S3["Acabado y control de calidad"]:::pantalla --> S4["Enviado"]:::pantalla
+  S4 --> FIN(["Entregado"]):::final
+  classDef entrada fill:#1f2a24,stroke:#1f2a24,color:#fff
+  classDef pantalla fill:#e6f2ea,stroke:#17703f,stroke-width:2px,color:#1f2a24
+  classDef decision fill:#fffdf9,stroke:#1f2a24,stroke-width:2px,color:#1f2a24
+  classDef error fill:#fdecea,stroke:#b42318,stroke-width:2px,stroke-dasharray:6 4,color:#b42318
+  classDef final fill:#17703f,stroke:#17703f,color:#fff
+      </pre>
+    </section>
+
+    <section class="card stack" aria-labelledby="t-comp">
+      <h2 id="t-comp">Compartir e iterar</h2>
+      <p>Antes de cambiar las pantallas, este flujo se muestra a 2 compañeros. Copia el enlace y pídeles que recorran cada flujo y digan dónde se perderían.</p>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="copiar">Copiar enlace del flujo</button>
+        <span class="muted" id="copiado" aria-live="polite"></span>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · Reto 4 IHC · <a href="flujo.html">Flujo de usuario</a></footer>
+</div>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { fontFamily: 'Inter, sans-serif', fontSize: '15px', lineColor: '#5e574d', edgeLabelBackground: '#fffdf9' },
+    // tamaño real con scroll horizontal: si se encoge al ancho, el texto queda ilegible
+    flowchart: { useMaxWidth: false, nodeSpacing: 30, rankSpacing: 45, wrappingWidth: 170 } });
+</script>
+<script>
+  document.getElementById('copiar').onclick = async () => {
+    const msg = document.getElementById('copiado');
+    try { await navigator.clipboard.writeText(location.href.split('#')[0]); msg.textContent = 'Enlace copiado.'; }
+    catch { msg.textContent = 'Copia este enlace: ' + location.href; }
+  };
+</script>
+<script src="app.js"></script>
+</body>
+</html>

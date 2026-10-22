@@ -528,3 +528,16 @@ dialog.toast::backdrop { background: rgba(0, 0, 0, .35); }
 .error { color: var(--error); font-weight: 600; }
 .error-box { border-left-color: var(--error); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; }
 .cart-item .error { flex-basis: 100%; }
+
+/* ---------- Flujo de usuario ---------- */
+
+.flow { min-width: 0; max-width: 100%; }
+.flow pre.mermaid { max-width: 100%; margin: 0; overflow-x: auto; background: transparent; text-align: center; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px 24px; margin: 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 8px; }
+.sym { display: inline-block; width: 28px; height: 18px; border: 2px solid; border-radius: 4px; }
+.sym.entrada { background: var(--grafito); border-color: var(--grafito); border-radius: 9px; }
+.sym.pantalla { background: #e6f2ea; border-color: var(--verde); }
+.sym.decision { width: 16px; height: 16px; margin: 0 6px; background: var(--crema); border-color: var(--grafito); border-radius: 0; transform: rotate(45deg); }
+.sym.error { background: #fdecea; border: 2px dashed var(--error); }
+.sym.final { background: var(--verde); border-color: var(--verde); border-radius: 9px; }
