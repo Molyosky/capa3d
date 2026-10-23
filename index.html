@@ -89,7 +89,7 @@
   <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · <a href="flujo.html">Flujo de usuario</a></footer>
 </div>
 <script>
-  // Filtro simple por texto y categoría (sin dependencias)
+  
   const q = document.getElementById('q'), cat = document.getElementById('cat');
   const cards = [...document.querySelectorAll('.product-card')], conteo = document.getElementById('conteo');
   function filtrar() {
@@ -104,7 +104,7 @@
   }
   q.addEventListener('input', filtrar); cat.addEventListener('change', filtrar);
   document.getElementById('limpiar').onclick = () => { q.value = ''; cat.value = ''; filtrar(); q.focus(); };
-  // Entrada desde la ruta superior del detalle: index.html?cat=Macetas abre el catálogo filtrado
+ 
   const pedida = new URLSearchParams(location.search).get('cat');
   if ([...cat.options].some(o => o.value === pedida)) { cat.value = pedida; filtrar(); }
 </script>
