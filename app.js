@@ -42,7 +42,11 @@
     }
     $('#form-correo').addEventListener('submit', e => { e.preventDefault(); entrar({ correo: $('#correo').value.trim() }); });
     // shortcut: Google simulado (prototipo sin servidor); con backend se usaría Google Identity Services
-    $('#btn-google').onclick = () => entrar({ correo: 'Cuenta de Google' });
+    $('#btn-google').onclick = () => aviso({
+      titulo: 'Inicio con Google (prototipo)', // título verde, igual que en Figma (OV4)
+      texto: 'Esto es un prototipo: no se conecta con Google de verdad. Al continuar, se simula que iniciaste sesión.',
+      botones: [['Cancelar', 'btn-dashed'], ['Continuar', 'btn-primary', () => entrar({ correo: 'Cuenta de Google' })]],
+    });
     $('#salir').onclick = () => { localStorage.removeItem('c3d-cuenta'); location.reload(); };
   }
 
