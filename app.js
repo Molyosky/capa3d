@@ -27,28 +27,10 @@
   const guardarCarrito = () => { guardar('c3d-carrito', carrito); pintarResumen(); };
   const MAX = 10, avisoMax = `Llegaste al máximo de ${MAX} unidades por producto.`;
 
-  // ---------- Cuenta con Google o correo (prototipo: solo se guarda el correo, nunca la contraseña) ----------
+  // ---------- Cuenta (Firebase Auth en firebase.js; aquí solo se lee el caché de la sesión) ----------
   const cuenta = leer('c3d-cuenta', null);
   const puedeComprar = () => !!cuenta;
   if (cuenta) $$('.nav a[href="login.html"]').forEach(a => a.textContent = 'Mi cuenta');
-  if (pagina === 'login.html') {
-    const sig = new URLSearchParams(location.search).get('next');
-    const destino = sig && /^[\w-]+\.html$/.test(sig) ? sig : 'index.html'; // solo páginas propias
-    const entrar = datos => { guardar('c3d-cuenta', datos); location.href = destino; };
-    $('#para-comprar').hidden = !sig;
-    if (cuenta) {
-      $('#entrar').hidden = true; $('#sesion').hidden = false;
-      $('#titulo').textContent = 'Mi cuenta'; $('#quien').textContent = cuenta.correo;
-    }
-    $('#form-correo').addEventListener('submit', e => { e.preventDefault(); entrar({ correo: $('#correo').value.trim() }); });
-    // shortcut: Google simulado (prototipo sin servidor); con backend se usaría Google Identity Services
-    $('#btn-google').onclick = () => aviso({
-      titulo: 'Inicio con Google (prototipo)', // título verde, igual que en Figma (OV4)
-      texto: 'Esto es un prototipo: no se conecta con Google de verdad. Al continuar, se simula que iniciaste sesión.',
-      botones: [['Cancelar', 'btn-dashed'], ['Continuar', 'btn-primary', () => entrar({ correo: 'Cuenta de Google' })]],
-    });
-    $('#salir').onclick = () => { localStorage.removeItem('c3d-cuenta'); location.reload(); };
-  }
 
   // Aviso (toast) o diálogo modal hecho con <dialog>
   function aviso({ titulo, texto, botones, modal }) {
@@ -69,19 +51,6 @@
     d.showModal(); // siempre en el centro, sobre un fondo oscuro
     d.querySelector('.btn-primary')?.focus();
     return d;
-  }
-
-  // ---------- Catálogo: ordenar ----------
-  const orden = $('#orden');
-  if (orden) {
-    const grid = $('#grid'), original = $$('.product-card');
-    orden.addEventListener('change', () => {
-      const precio = el => numero(el.querySelector('.price').textContent);
-      const lista = [...original];
-      if (orden.value === 'Menor precio') lista.sort((a, b) => precio(a) - precio(b));
-      if (orden.value === 'Mayor precio') lista.sort((a, b) => precio(b) - precio(a));
-      grid.append(...lista);
-    });
   }
 
   // ---------- Detalle: agregar al carrito ----------
@@ -201,8 +170,11 @@
       aviso({
         modal: true, titulo: '¿Confirmar el pago?',
         texto: `Se registrará tu pedido por ${dinero(t.total)} con ${nombrePago(pago.metodo).toLowerCase()}. Podrás cancelarlo mientras no empiece la impresión.`,
-        botones: [['Revisar de nuevo', 'btn-dashed'], ['Sí, confirmar', 'btn-primary', () => {
-          guardar('c3d-pedido', { numero: 'C3D-' + String(Date.now() % 10000).padStart(4, '0'), fecha: Date.now(), ...t });
+        botones: [['Revisar de nuevo', 'btn-dashed'], ['Sí, confirmar', 'btn-primary', async () => {
+          const pedido = { numero: 'C3D-' + String(Date.now() % 100000).padStart(5, '0'), fecha: Date.now(), ...t, items: carrito, entrega: envio, pago };
+          try { await window.C3D.guardarPedido(pedido); }
+          catch (err) { aviso({ titulo: 'No se pudo registrar el pedido', texto: err.message + ' Tu carrito sigue guardado.', botones: [['Cerrar', 'btn-primary']] }); return; }
+          guardar('c3d-pedido', pedido);
           carrito = []; guardarCarrito();
           location.href = 'confirmacion.html';
         }]],

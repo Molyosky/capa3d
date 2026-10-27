@@ -31,8 +31,11 @@
         <p class="divider"><span>o con tu correo</span></p>
         <form class="stack" id="form-correo" aria-label="Iniciar sesión con correo">
           <div class="control"><label for="correo">Correo electrónico *</label><input class="input" id="correo" type="email" required autocomplete="email" placeholder="tucorreo@ejemplo.com"></div>
-          <div class="control"><label for="clave">Contraseña *</label><input class="input" id="clave" type="password" required minlength="6" autocomplete="current-password" aria-describedby="clave-ayuda"><p class="muted" id="clave-ayuda">Mínimo 6 caracteres. Prototipo: la contraseña no se guarda.</p></div>
-          <button class="btn btn-primary btn-block" type="submit">Iniciar sesión</button>
+          <div class="control"><label for="clave">Contraseña *</label><input class="input" id="clave" type="password" required minlength="6" autocomplete="current-password" aria-describedby="clave-ayuda"><p class="muted" id="clave-ayuda">Mínimo 6 caracteres.</p></div>
+          <p class="note error-box" id="login-error" role="alert" hidden></p>
+          <button class="btn btn-primary btn-block" type="submit" id="btn-entrar">Iniciar sesión</button>
+          <button class="btn btn-dashed btn-block" type="button" id="modo">¿No tienes cuenta? Crea una</button>
+          <button class="btn btn-dashed btn-block" type="button" id="olvide">Olvidé mi contraseña</button>
         </form>
         <p class="muted">Tus datos de envío quedan guardados para la próxima compra.</p>
       </div>
@@ -44,8 +47,10 @@
       </section>
     </div>
   </main>
-  <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · <a href="flujo.html">Flujo de usuario</a></footer>
+  <footer class="site-footer">Capa3D · Impresión 3D a pedido · <a href="flujo.html">Flujo de usuario</a></footer>
 </div>
+<script src="productos.js"></script>
 <script src="app.js"></script>
+<script type="module" src="firebase.js"></script>
 </body>
 </html>

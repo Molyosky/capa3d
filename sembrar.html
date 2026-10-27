@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Cargar catálogo · Capa3D</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <main class="login">
+    <h1>Cargar catálogo en Firestore</h1>
+    <p class="muted">Solo para administradores. Sube (o actualiza) los productos de productos.js a la colección "productos". Inicia sesión antes con el correo de administrador.</p>
+    <button class="btn btn-primary btn-block" type="button" id="subir">Subir productos</button>
+    <p id="estado" role="status"></p>
+  </main>
+</div>
+<script src="productos.js"></script>
+<script type="module" src="firebase.js"></script>
+<script type="module">
+  const estado = document.getElementById('estado');
+  document.getElementById('subir').onclick = async () => {
+    estado.textContent = 'Subiendo…';
+    try { estado.textContent = `Listo: ${await window.C3D.sembrar()} productos en Firestore.`; }
+    catch (e) { estado.textContent = 'Error: ' + e.message; }
+  };
+</script>
+</body>
+</html>

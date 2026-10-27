@@ -43,8 +43,19 @@
       </aside>
     </div>
   </main>
-  <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · <a href="flujo.html">Flujo de usuario</a></footer>
+  <footer class="site-footer">Capa3D · Impresión 3D a pedido · <a href="flujo.html">Flujo de usuario</a></footer>
 </div>
+<script src="productos.js"></script>
 <script src="app.js"></script>
+<script type="module" src="firebase.js"></script>
+<script type="module">
+  // Último pedido guardado en Firestore (sirve en cualquier dispositivo con la misma cuenta)
+  const [ultimo] = await window.C3D.misPedidos();
+  const local = JSON.parse(localStorage.getItem('c3d-pedido') || 'null');
+  if (ultimo && ultimo.numero !== local?.numero) {
+    delete ultimo.creado; // Timestamp de Firestore no se puede guardar como JSON
+    localStorage.setItem('c3d-pedido', JSON.stringify(ultimo)); location.reload();
+  }
+</script>
 </body>
 </html>

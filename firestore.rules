@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Mismo correo que ADMINS en firebase-config.js
+    function esAdmin() {
+      return request.auth != null && request.auth.token.email_verified == true
+        && request.auth.token.email in ['TU-CORREO@gmail.com'];
+    }
+
+    match /productos/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    match /usuarios/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Cada cliente crea y ve solo sus pedidos; el estado lo cambia el administrador
+    match /pedidos/{id} {
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid
+        && request.resource.data.estado == 'Recibido';
+      allow read: if request.auth != null && (resource.data.uid == request.auth.uid || esAdmin());
+      allow update, delete: if esAdmin();
+    }
+  }
+}

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Producto · Capa3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="Capa3D, ir al inicio">Capa3D</a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="index.html" aria-current="page">Catálogo</a>
+      <a href="seguimiento.html">Mis pedidos</a>
+      <a href="ayuda.html">Ayuda</a>
+      <a href="login.html">Iniciar sesión</a>
+      <a class="cart" href="carrito.html">Carrito <span class="count" aria-live="polite">0</span></a>
+    </nav>
+  </header>
+  <main>
+    <nav class="breadcrumb" aria-label="Migas de pan"><a href="index.html">Inicio</a> <span aria-hidden="true">›</span> <a id="miga-cat" href="index.html"></a> <span aria-hidden="true">›</span> <span aria-current="page" id="miga-nombre">Cargando…</span></nav>
+    <div class="note error-box" id="no-existe" role="alert" hidden>
+      <p>No encontramos este producto. Puede que ya no esté disponible.</p>
+      <a class="btn" href="index.html">Ver el catálogo</a>
+    </div>
+    <div class="detail" id="detalle" hidden>
+      <div class="gallery" id="galeria">
+        <div class="photo">
+          <img id="foto" src="" alt="">
+          <p class="photo-caption" id="rotulo"></p>
+        </div>
+        <div class="thumbs" role="group" aria-label="Vistas del producto" id="thumbs"></div>
+      </div>
+      <form class="options" onsubmit="return false">
+        <h1 class="name"></h1>
+        <div class="tags"><span class="tag" id="tag-cat"></span><span class="tag" id="tag-dias"></span></div>
+        <p class="price"></p>
+        <p id="desc"></p>
+        <div id="campos"></div>
+        <div>
+          <p class="label" id="cant-l">Cantidad</p>
+          <div class="qty" role="group" aria-labelledby="cant-l">
+            <button type="button" class="btn" id="menos" aria-label="Quitar una unidad">−</button>
+            <output id="cant" aria-live="polite">1</output>
+            <button type="button" class="btn" id="mas" aria-label="Agregar una unidad">+</button>
+          </div>
+          <p class="muted" id="cant-ayuda" aria-live="polite">Entre 1 y 10 unidades.</p>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary" style="min-width:197px;height:49px">Agregar al carrito</button>
+          <a class="btn btn-dashed" id="seguir" href="index.html" style="height:49px">Seguir viendo</a>
+        </div>
+      </form>
+    </div>
+  </main>
+  <footer class="site-footer">Capa3D · Impresión 3D a pedido · <a href="flujo.html">Flujo de usuario</a></footer>
+</div>
+<script src="productos.js"></script>
+<script src="app.js"></script>
+<script type="module" src="firebase.js"></script>
+<script type="module">
+  const $ = s => document.querySelector(s);
+  const id = new URLSearchParams(location.search).get('id');
+  const prod = id && await window.C3D.cargarProducto(id);
+  if (!prod) { $('#no-existe').hidden = false; $('#miga-nombre').textContent = 'No encontrado'; }
+  else {
+    const dinero = n => '$ ' + n.toFixed(2).replace('.', ',');
+    document.title = prod.nombre + ' · Capa3D';
+    $('#miga-cat').textContent = prod.cat; $('#miga-cat').href = 'index.html?cat=' + encodeURIComponent(prod.cat);
+    $('#miga-nombre').textContent = prod.nombre;
+    $('#galeria').setAttribute('aria-label', 'Galería de ' + prod.nombre);
+    $('.options h1').textContent = prod.nombre;
+    $('#tag-cat').textContent = prod.cat;
+    $('#tag-dias').textContent = 'Listo en ' + prod.dias + (prod.dias === 1 ? ' día' : ' días');
+    $('.options .price').textContent = dinero(prod.precio) + ' c/u';
+    $('#desc').textContent = prod.desc;
+
+    // Galería: al elegir una miniatura cambia la foto y el rótulo
+    const nombresVista = ['Principal', 'Frontal', 'Superior', 'Detalle'];
+    const fotos = prod.fotos?.length ? prod.fotos : [window.C3D_FOTO(prod)];
+    const foto = $('#foto'), rotulo = $('#rotulo');
+    const ver = (b, n) => {
+      document.querySelectorAll('.thumb').forEach(o => o.setAttribute('aria-pressed', o === b));
+      foto.src = fotos[n];
+      foto.alt = prod.nombre + ', vista ' + nombresVista[n].toLowerCase();
+      rotulo.textContent = 'Vista ' + nombresVista[n].toLowerCase() + ' · ' + prod.nombre;
+    };
+    fotos.forEach((src, n) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'thumb'; b.dataset.src = src;
+      b.setAttribute('aria-label', 'Ver vista ' + nombresVista[n].toLowerCase());
+      b.innerHTML = '<img alt=""><span></span>';
+      b.querySelector('img').src = src; b.querySelector('span').textContent = nombresVista[n];
+      b.onclick = () => ver(b, n);
+      $('#thumbs').append(b);
+    });
+    ver($('.thumb'), 0);
+
+    // Opciones: material, tamaño y color (la primera marcada; en tamaño, la de en medio)
+    const grupo = (legend, name, valores, marcada) => {
+      if (!valores?.length) return;
+      const f = document.createElement('fieldset');
+      f.innerHTML = `<legend></legend><div class="choices"></div>`;
+      f.querySelector('legend').textContent = legend;
+      valores.forEach((v, n) => {
+        const l = document.createElement('label');
+        l.className = 'choice';
+        l.innerHTML = `<input type="radio" name="${name}">`;
+        l.firstChild.value = v; l.firstChild.checked = n === marcada;
+        l.append(' ' + v);
+        f.querySelector('.choices').append(l);
+      });
+      $('#campos').append(f);
+    };
+    grupo('Material', 'material', prod.materiales, 0);
+    grupo('Tamaño', 'tamano', prod.tamanos, Math.floor((prod.tamanos?.length || 0) / 2));
+    grupo('Color', 'color', prod.colores, 0);
+    $('#detalle').hidden = false;
+  }
+  // Cantidad entre 1 y 10
+  const cant = $('#cant');
+  const set = n => cant.textContent = Math.min(10, Math.max(1, n));
+  $('#menos').onclick = () => set(+cant.textContent - 1);
+  $('#mas').onclick = () => set(+cant.textContent + 1);
+</script>
+</body>
+</html>

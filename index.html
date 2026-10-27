@@ -43,71 +43,50 @@
         </select>
       </div>
     </form>
-    <p class="muted" id="conteo" aria-live="polite">Mostrando 5 productos</p>
+    <p class="muted" id="conteo" aria-live="polite">Cargando productos…</p>
     <div class="note error-box" id="vacio" role="alert" hidden>
       <p>No encontramos productos con esa búsqueda. Revisa cómo lo escribiste o prueba con otra categoría.</p>
       <button type="button" class="btn" id="limpiar">Ver todos los productos</button>
     </div>
-    <div class="grid" id="grid">
-      <a class="product-card" href="detalle-dragon-articulado.html" aria-label="Dragón articulado, ver detalle">
-        <div class="photo"><img src="img/cat-dragon.png" alt="Dragón articulado"></div>
-        <h3>Dragón articulado</h3>
-        <div class="tags"><span class="tag">Figuras</span><span class="muted">Listo en 2 días</span></div>
-        <p class="price">$ 12,00</p>
-        <span class="btn btn-block">Ver detalle</span>
-      </a>
-      <a class="product-card" href="detalle-maceta-geometrica.html" aria-label="Maceta geométrica, ver detalle">
-        <div class="photo"><img src="img/cat-maceta.png" alt="Maceta geométrica"></div>
-        <h3>Maceta geométrica</h3>
-        <div class="tags"><span class="tag">Macetas</span><span class="muted">Listo en 1 día</span></div>
-        <p class="price">$ 8,00</p>
-        <span class="btn btn-block">Ver detalle</span>
-      </a>
-      <a class="product-card" href="detalle-soporte-celular.html" aria-label="Soporte para celular, ver detalle">
-        <div class="photo"><img src="img/cat-celular.png" alt="Soporte para celular"></div>
-        <h3>Soporte para celular</h3>
-        <div class="tags"><span class="tag">Soporte</span><span class="muted">Listo en 1 día</span></div>
-        <p class="price">$ 6,00</p>
-        <span class="btn btn-block">Ver detalle</span>
-      </a>
-      <a class="product-card" href="detalle-busto-decorativo.html" aria-label="Busto decorativo, ver detalle">
-        <div class="photo"><img src="img/cat-busto.png" alt="Busto decorativo"></div>
-        <h3>Busto decorativo</h3>
-        <div class="tags"><span class="tag">Figuras</span><span class="muted">Listo en 3 días</span></div>
-        <p class="price">$ 18,00</p>
-        <span class="btn btn-block">Ver detalle</span>
-      </a>
-      <a class="product-card" href="detalle-mini-soporte-laptop.html" aria-label="Mini soporte de laptop, ver detalle">
-        <div class="photo"><img src="img/cat-minilaptop.png" alt="Mini soporte de laptop"></div>
-        <h3>Mini soporte de laptop</h3>
-        <div class="tags"><span class="tag">Soporte</span><span class="muted">Listo en 1 día</span></div>
-        <p class="price">$ 18,00</p>
-        <span class="btn btn-block">Ver detalle</span>
-      </a>
-    </div>
+    <div class="grid" id="grid" aria-busy="true"></div>
   </main>
-  <footer class="site-footer">Capa3D · Prototipo de baja fidelidad · <a href="flujo.html">Flujo de usuario</a></footer>
+  <footer class="site-footer">Capa3D · Impresión 3D a pedido · <a href="flujo.html">Flujo de usuario</a></footer>
 </div>
-<script>
-  
-  const q = document.getElementById('q'), cat = document.getElementById('cat');
-  const cards = [...document.querySelectorAll('.product-card')], conteo = document.getElementById('conteo');
-  function filtrar() {
-    const t = q.value.trim().toLowerCase(), c = cat.value;
-    let n = 0;
-    cards.forEach(el => {
-      const ok = (t.length < 2 || el.textContent.toLowerCase().includes(t)) && (!c || el.querySelector('.tag').textContent === c);
-      el.hidden = !ok; if (ok) n++;
-    });
-    conteo.textContent = 'Mostrando ' + n + (n === 1 ? ' producto' : ' productos');
-    document.getElementById('vacio').hidden = n > 0;
-  }
-  q.addEventListener('input', filtrar); cat.addEventListener('change', filtrar);
-  document.getElementById('limpiar').onclick = () => { q.value = ''; cat.value = ''; filtrar(); q.focus(); };
- 
-  const pedida = new URLSearchParams(location.search).get('cat');
-  if ([...cat.options].some(o => o.value === pedida)) { cat.value = pedida; filtrar(); }
-</script>
+<script src="productos.js"></script>
 <script src="app.js"></script>
+<script type="module" src="firebase.js"></script>
+<script type="module">
+  const $ = s => document.querySelector(s);
+  const q = $('#q'), cat = $('#cat'), orden = $('#orden'), grid = $('#grid'), conteo = $('#conteo');
+  const dinero = n => '$ ' + n.toFixed(2).replace('.', ',');
+  const productos = await window.C3D.cargarProductos();
+  const tarjetas = productos.map(p => {
+    const a = document.createElement('a');
+    a.className = 'product-card'; a.href = 'producto.html?id=' + encodeURIComponent(p.id);
+    a.setAttribute('aria-label', p.nombre + ', ver detalle');
+    a.innerHTML = '<div class="photo"><img loading="lazy"></div><h3></h3><div class="tags"><span class="tag"></span><span class="muted"></span></div><p class="price"></p><span class="btn btn-block">Ver detalle</span>';
+    a.querySelector('img').src = window.C3D_FOTO(p); a.querySelector('img').alt = p.nombre;
+    a.querySelector('h3').textContent = p.nombre;
+    a.querySelector('.tag').textContent = p.cat;
+    a.querySelector('.tags .muted').textContent = 'Listo en ' + p.dias + (p.dias === 1 ? ' día' : ' días');
+    a.querySelector('.price').textContent = dinero(p.precio);
+    return { a, p };
+  });
+  function pintar() {
+    const t = q.value.trim().toLowerCase(), c = cat.value;
+    const lista = tarjetas.filter(({ a, p }) => (t.length < 2 || a.textContent.toLowerCase().includes(t)) && (!c || p.cat === c));
+    if (orden.value === 'Menor precio') lista.sort((x, y) => x.p.precio - y.p.precio);
+    if (orden.value === 'Mayor precio') lista.sort((x, y) => y.p.precio - x.p.precio);
+    grid.replaceChildren(...lista.map(x => x.a));
+    grid.removeAttribute('aria-busy');
+    conteo.textContent = 'Mostrando ' + lista.length + (lista.length === 1 ? ' producto' : ' productos');
+    $('#vacio').hidden = lista.length > 0;
+  }
+  q.addEventListener('input', pintar); cat.addEventListener('change', pintar); orden.addEventListener('change', pintar);
+  $('#limpiar').onclick = () => { q.value = ''; cat.value = ''; pintar(); q.focus(); };
+  const pedida = new URLSearchParams(location.search).get('cat');
+  if ([...cat.options].some(o => o.value === pedida)) cat.value = pedida;
+  pintar();
+</script>
 </body>
 </html>
