@@ -94,6 +94,7 @@ if (pagina === 'login.html') {
     'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos.',
     'auth/configuration-not-found': 'El inicio de sesión aún no está activado en Firebase (Authentication › Método de acceso).',
     'auth/operation-not-allowed': 'Ese método de inicio de sesión no está activado en Firebase.',
+    'auth/unauthorized-domain': 'Este sitio no está autorizado en Firebase (Authentication › Configuración › Dominios autorizados).',
     'auth/network-request-failed': 'Sin conexión. Revisa tu internet.',
   };
   const intentar = async fn => {

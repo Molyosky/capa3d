@@ -3,7 +3,7 @@
 const MATERIALES = ['PLA (estándar)', 'PETG (+$2, más resistente)'];
 const TAMANOS = ['Pequeño 10 cm (−$3)', 'Mediano 20 cm', 'Grande 30 cm (+$6)'];
 const p = (id, nombre, cat, precio, dias, desc, colores, fotos = [], extra = {}) =>
-  ({ id, nombre, cat, precio, dias, desc, colores, fotos, materiales: MATERIALES, tamanos: TAMANOS, ...extra });
+  ({ id, nombre, cat, precio, dias, desc, colores, fotos: fotos.length ? fotos : [`img/${id}.jpg`], materiales: MATERIALES, tamanos: TAMANOS, ...extra });
 const vistas = base => [1, 2, 3, 4].map(n => `img/${base}-${n}.png`);
 
 window.C3D_PRODUCTOS = [
@@ -19,7 +19,7 @@ window.C3D_PRODUCTOS = [
   p('buho-lector', 'Búho lector', 'Figuras', 8, 1, 'Búho con libro abierto, sujetalibros o figura de escritorio.', ['Gris', 'Blanco', 'Negro']),
   p('dinosaurio-rex', 'Dinosaurio T-Rex', 'Figuras', 14, 2, 'T-Rex con mandíbula móvil y base estable.', ['Verde', 'Gris', 'Naranja', 'Negro']),
   // Macetas
-  p('maceta-geometrica', 'Maceta geométrica', 'Macetas', 8, 1, 'Maceta decorativa de caras triangulares con orificio de drenaje.', ['Blanco', 'Negro', 'Gris', 'Rojo'], vistas('maceta')),
+  p('maceta-geometrica', 'Maceta geométrica', 'Macetas', 8, 1, 'Maceta decorativa de caras triangulares con orificio de drenaje.', ['Blanco', 'Negro', 'Gris', 'Rojo'], vistas('maceta').filter(f => !f.endsWith('-2.png'))),
   p('maceta-autorriego', 'Maceta con autorriego', 'Macetas', 12, 2, 'Dos piezas con depósito de agua y mecha; riega sola hasta por una semana.', ['Blanco', 'Turquesa', 'Gris']),
   p('maceta-cara', 'Maceta cara serena', 'Macetas', 10, 1, 'Rostro de ojos cerrados; las plantas hacen de cabello.', ['Blanco', 'Gris', 'Rosa']),
   p('maceta-colgante', 'Maceta colgante', 'Macetas', 9, 1, 'Maceta con tres puntos de anclaje para colgar con cuerda.', ['Blanco', 'Negro', 'Verde']),
