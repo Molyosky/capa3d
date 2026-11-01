@@ -3,7 +3,7 @@
 const MATERIALES = ['PLA (estándar)', 'PETG (+$2, más resistente)'];
 const TAMANOS = ['Pequeño 10 cm (−$3)', 'Mediano 20 cm', 'Grande 30 cm (+$6)'];
 const p = (id, nombre, cat, precio, dias, desc, colores, fotos = [], extra = {}) =>
-  ({ id, nombre, cat, precio, dias, desc, colores, fotos: fotos.length ? fotos : [`img/${id}.jpg`], materiales: MATERIALES, tamanos: TAMANOS, ...extra });
+  ({ id, nombre, cat, precio, dias, desc, colores, fotos: fotos.length ? fotos : ['', '-frontal', '-superior', '-detalle'].map(v => `img/${id}${v}.jpg`), materiales: MATERIALES, tamanos: TAMANOS, ...extra });
 const vistas = base => [1, 2, 3, 4].map(n => `img/${base}-${n}.png`);
 
 window.C3D_PRODUCTOS = [
@@ -47,3 +47,8 @@ window.C3D_FOTO = (prod, n = 0) => prod.fotos?.[n] || 'data:image/svg+xml,' + en
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="#e8ecea"/>` +
   `<path d="M170 110l30-18 30 18v36l-30 18-30-18z" fill="none" stroke="#7a8a84" stroke-width="4"/>` +
   `<text x="200" y="215" font-family="Inter,sans-serif" font-size="20" text-anchor="middle" fill="#4a5a54">${prod.nombre.replace(/[<&]/g, '')}</text></svg>`);
+
+// Foto del producto en un color: el primer color usa la foto principal; los demás, img/{id}--{color}.jpg
+window.C3D_FOTO_COLOR = (prod, color) => prod.colores.indexOf(color) > 0
+  ? `img/${prod.id}--${color.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/ /g, '-')}.jpg`
+  : window.C3D_FOTO(prod);
