@@ -52,3 +52,10 @@ window.C3D_FOTO = (prod, n = 0) => prod.fotos?.[n] || 'data:image/svg+xml,' + en
 window.C3D_FOTO_COLOR = (prod, color) => prod.colores.indexOf(color) > 0
   ? `img/${prod.id}--${color.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/ /g, '-')}.jpg`
   : window.C3D_FOTO(prod);
+// Las 4 vistas en un color: principal del color + img/{id}--{color}-{vista}.jpg
+window.C3D_FOTOS_COLOR = (prod, color) => {
+  const principal = window.C3D_FOTO_COLOR(prod, color);
+  return prod.colores.indexOf(color) > 0
+    ? [principal, ...['frontal', 'superior', 'detalle'].map(v => principal.replace('.jpg', `-${v}.jpg`))]
+    : prod.fotos;
+};
