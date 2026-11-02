@@ -243,7 +243,6 @@
 })();
 
 // ---------- Avance del pedido: etapas calculadas desde la hora del pedido y el tiempo de impresión ----------
-var H = 3600e3; // var: la usa el bloque de arriba, que corre antes de esta línea
 function horasImpresion(items) {
   // Horas de máquina por unidad según tamaño; PETG imprime más lento
   const h = items.reduce((s, i) => s + i.cant * (/Pequeño/.test(i.opciones) ? 2.5 : /Grande/.test(i.opciones) ? 11 : 5) * (/PETG/.test(i.opciones) ? 1.2 : 1), 0);
@@ -251,7 +250,7 @@ function horasImpresion(items) {
 }
 function etapasPedido(p) {
   const imp = horasImpresion(p.items || []), t0 = p.fecha;
-  const fin = [0, 6, 6 + imp, 6 + imp + 8, 6 + imp + 8 + 14].map(h => t0 + h * H); // cola/laminado 6 h, acabado 8 h, empaque y margen 14 h
+  const fin = [0, 6, 6 + imp, 6 + imp + 8, 6 + imp + 8 + 14].map(h => t0 + h * 3600e3); // cola/laminado 6 h, acabado 8 h, empaque y margen 14 h
   return { imp, etapas: [
     ['Recibido', fin[0], 'Pago confirmado'],
     ['Preparando la impresión', fin[1], 'Laminado del modelo y turno en la impresora'],
@@ -272,7 +271,7 @@ function lineaDeTiempo(p, ahora) {
     if (hecho) when = (i === 4 ? 'Desde el ' : '') + fecha(finEtapa);
     else if (ahoraEs) {
       const pct = Math.min(99, Math.floor(100 * (ahora - inicio(i)) / (finEtapa - inicio(i))));
-      const faltan = Math.max(1, Math.ceil((finEtapa - ahora) / H));
+      const faltan = Math.max(1, Math.ceil((finEtapa - ahora) / 3600e3));
       when = `${nota} · avance ${pct} % · faltan aprox. ${faltan} h`;
     } else when = 'Estimado: ' + fecha(finEtapa);
     const dot = hecho ? 'done' : ahoraEs ? 'now' : '';
