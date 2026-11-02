@@ -235,9 +235,47 @@
     $$('strong, h1').forEach(el => el.textContent = el.textContent.replace('C3D-0142', pedido.numero));
     const vals = { 'Subtotal': pedido.subtotal, 'Envío': pedido.envio, 'Total': pedido.total };
     $$('#det + dl dt').forEach(dt => { if (dt.textContent in vals) dt.nextElementSibling.textContent = dinero(vals[dt.textContent]); });
-    const f = new Date(pedido.fecha), when = $('.timeline .when');
-    if (when) when.textContent = f.toLocaleDateString('es-EC', { weekday: 'short', day: 'numeric', month: 'short' }) + ', ' + f.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' });
+    const tl = $('.timeline');
+    if (tl) tl.innerHTML = lineaDeTiempo(pedido, Date.now());
   }
 
   pintarResumen();
 })();
+
+// ---------- Avance del pedido: etapas calculadas desde la hora del pedido y el tiempo de impresión ----------
+const H = 3600e3;
+function horasImpresion(items) {
+  // Horas de máquina por unidad según tamaño; PETG imprime más lento
+  const h = items.reduce((s, i) => s + i.cant * (/Pequeño/.test(i.opciones) ? 2.5 : /Grande/.test(i.opciones) ? 11 : 5) * (/PETG/.test(i.opciones) ? 1.2 : 1), 0);
+  return Math.min(60, Math.max(2, Math.round(h))); // una impresora; tope para que nada pase de ~4 días
+}
+function etapasPedido(p) {
+  const imp = horasImpresion(p.items || []), t0 = p.fecha;
+  const fin = [0, 6, 6 + imp, 6 + imp + 8, 6 + imp + 8 + 14].map(h => t0 + h * H); // cola/laminado 6 h, acabado 8 h, empaque y margen 14 h
+  return { imp, etapas: [
+    ['Recibido', fin[0], 'Pago confirmado'],
+    ['Preparando la impresión', fin[1], 'Laminado del modelo y turno en la impresora'],
+    ['Imprimiendo', fin[2], `${imp} h de impresión estimadas`],
+    ['Acabado y control de calidad', fin[3], 'Retiro de soportes, lijado y revisión'],
+    ['Listo para envío', fin[4], 'Empacado; coordinando con el courier'],
+  ] };
+}
+function lineaDeTiempo(p, ahora) {
+  const fecha = t => new Date(t).toLocaleDateString('es-EC', { weekday: 'short', day: 'numeric', month: 'short' }) + ', ' + new Date(t).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' });
+  const { etapas } = etapasPedido(p);
+  // Cada etapa va del fin de la anterior a su propio fin; la actual es la primera que aún no termina
+  const inicio = i => etapas[Math.max(0, i - 1)][1];
+  const actual = etapas.findIndex(e => ahora < e[1]); // -1: todo listo
+  return etapas.map(([nombre, finEtapa, nota], i) => {
+    const hecho = actual === -1 || i < actual, ahoraEs = i === actual;
+    let when;
+    if (hecho) when = (i === 4 ? 'Desde el ' : '') + fecha(finEtapa);
+    else if (ahoraEs) {
+      const pct = Math.min(99, Math.floor(100 * (ahora - inicio(i)) / (finEtapa - inicio(i))));
+      const faltan = Math.max(1, Math.ceil((finEtapa - ahora) / H));
+      when = `${nota} · avance ${pct} % · faltan aprox. ${faltan} h`;
+    } else when = 'Estimado: ' + fecha(finEtapa);
+    const dot = hecho ? 'done' : ahoraEs ? 'now' : '';
+    return `<li${ahoraEs || (i === 4 && hecho) ? ' aria-current="step"' : ''}><span class="dot ${dot}" aria-hidden="true"></span><div><span class="stage">${nombre}</span><span class="when">${when}</span></div></li>`;
+  }).join('') + `<li><span class="dot" aria-hidden="true"></span><div><span class="stage">Enviado</span><span class="when">${actual === -1 ? 'Te avisaremos por correo con la guía del courier' : 'Después de “Listo para envío”'}</span></div></li>`;
+}
