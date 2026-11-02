@@ -174,16 +174,18 @@
         $('#qr').innerHTML = q.createSvgTag(5, 8);
       }
       estado.textContent = 'Esperando el pago de ' + dinero(totales().total) + '…';
-      C3D.escucharCobro(cobro, c => {
+      const dejar = C3D.escucharCobro(cobro, c => {
         if (c?.estado === 'pagado') {
           estado.textContent = '¡Pago recibido! Continuando…';
           guardar('c3d-pago', { metodo: 'billetera', comp: c.comprobante || cobro, monto: c.monto });
           location.href = 'checkout-3-revision.html';
         } else if (c?.estado === 'cancelado') {
-          estado.textContent = 'Cancelaste el pago en la billetera. Elige otra forma de pago o vuelve a intentarlo recargando la página.';
+          estado.textContent = 'Cancelaste el pago en la billetera. Elige otra forma de pago o genera un código nuevo.';
+          dejar(); cobro = null; $('#otro-codigo').hidden = false;
         }
       });
     };
+    $('#otro-codigo').onclick = () => { $('#otro-codigo').hidden = true; $('#qr').replaceChildren(); $('#abrir-billetera').hidden = true; pagarConBilletera(); };
     const actualizar = () => {
       const m = $('input[name=pago]:checked').value, t = m === 'transferencia';
       banco.hidden = !t; comp.required = t;
