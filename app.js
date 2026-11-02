@@ -150,7 +150,7 @@
     if (envio.ciudad && envio.ciudad !== 'Quito') { contra.disabled = true; if (pago.metodo === 'contra-entrega') pago.metodo = 'transferencia'; }
     radios.forEach(r => r.checked = r.value === pago.metodo);
     comp.value = pago.comp;
-    const billetera = $('#billetera'), revisar = $('form.main-col .btn-primary');
+    const billetera = $('#billetera'), revisar = $('form.main-col button[type=submit]');
     let cobro; // se crea una sola vez, al elegir la billetera
     const pagarConBilletera = async () => {
       const estado = $('#qr-estado');
@@ -165,8 +165,9 @@
       catch (e) { cobro = null; estado.textContent = 'No se pudo generar el cobro: ' + e.message; return; }
       const url = 'https://molyosky.github.io/billetera-qr/?c=' + cobro;
       // En celular no se puede escanear la propia pantalla: se abre la billetera con un botón
+      $('#abrir-billetera').href = url;
       if (matchMedia('(pointer: coarse)').matches) {
-        $('#abrir-billetera').href = url; $('#abrir-billetera').hidden = false;
+        $('#abrir-billetera').hidden = false;
         $('#qr-ayuda').textContent = 'Toca el botón, confirma el pago en la billetera y vuelve a esta pestaña: avanzará sola.';
       } else {
         const q = qrcode(0, 'M'); q.addData(url); q.make();
