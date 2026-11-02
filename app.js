@@ -243,7 +243,7 @@
 })();
 
 // ---------- Avance del pedido: etapas calculadas desde la hora del pedido y el tiempo de impresión ----------
-const H = 3600e3;
+var H = 3600e3; // var: la usa el bloque de arriba, que corre antes de esta línea
 function horasImpresion(items) {
   // Horas de máquina por unidad según tamaño; PETG imprime más lento
   const h = items.reduce((s, i) => s + i.cant * (/Pequeño/.test(i.opciones) ? 2.5 : /Grande/.test(i.opciones) ? 11 : 5) * (/PETG/.test(i.opciones) ? 1.2 : 1), 0);
