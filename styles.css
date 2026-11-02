@@ -551,3 +551,9 @@ dialog.toast::backdrop { background: rgba(0, 0, 0, .35); }
 .btn-google .g { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--grafito); color: #fff; font-weight: 700; font-size: 14px; }
 .divider { display: flex; align-items: center; gap: 10px; color: var(--texto-2); font-size: 14px; }
 .divider::before, .divider::after { content: ""; flex: 1; border-top: 1px solid var(--linea); }
+
+/* WCAG 2.4.1: saltar al contenido; 2.5.8: objetivos de al menos 24 px */
+.skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--grafito); color: #fff; padding: 10px 14px; border-radius: 8px; }
+.skip:focus { top: 8px; }
+main:focus { outline: none; }
+.breadcrumb a { display: inline-flex; align-items: center; min-height: 24px; }

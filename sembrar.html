@@ -5,19 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Cargar catálogo · Capa3D</title>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
 <div class="page">
-  <main class="login">
+  <main id="contenido" tabindex="-1" class="login">
     <h1>Cargar catálogo en Firestore</h1>
     <p class="muted">Solo para administradores. Sube (o actualiza) los productos de productos.js a la colección "productos". Inicia sesión antes con el correo de administrador.</p>
     <button class="btn btn-primary btn-block" type="button" id="subir">Subir productos</button>
     <p id="estado" role="status"></p>
   </main>
 </div>
-<script src="productos.js?v=14"></script>
-<script type="module" src="firebase.js?v=14"></script>
+<script src="productos.js?v=15"></script>
+<script type="module" src="firebase.js?v=15"></script>
 <script type="module">
   const estado = document.getElementById('estado');
   document.getElementById('subir').onclick = async () => {
