@@ -29,7 +29,7 @@
 
   // ---------- Cuenta (Firebase Auth en firebase.js; aquí solo se lee el caché de la sesión) ----------
   const cuenta = leer('c3d-cuenta', null);
-  const puedeComprar = () => !!cuenta;
+  const puedeComprar = () => !!cuenta && cuenta.verificado !== false; // sin correo verificado vuelve a login
   if (cuenta) $$('.nav a[href="login.html"]').forEach(a => a.textContent = 'Mi cuenta');
 
   // Aviso (toast) o diálogo modal hecho con <dialog>

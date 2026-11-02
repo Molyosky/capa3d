@@ -18,8 +18,8 @@ service cloud.firestore {
 
     // Cada cliente crea y ve solo sus pedidos; el estado lo cambia el administrador
     match /pedidos/{id} {
-      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid
-        && request.resource.data.estado == 'Recibido';
+      allow create: if request.auth != null && request.auth.token.email_verified == true
+        && request.resource.data.uid == request.auth.uid && request.resource.data.estado == 'Recibido';
       allow read: if request.auth != null && (resource.data.uid == request.auth.uid || esAdmin());
       allow update, delete: if esAdmin();
     }
@@ -27,8 +27,8 @@ service cloud.firestore {
     // Cobro simulado: lo crea el cliente; la billetera (sin sesión) solo puede pasarlo de pendiente a pagado o cancelado
     match /cobros/{id} {
       allow read: if true;
-      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid
-        && request.resource.data.estado == 'pendiente';
+      allow create: if request.auth != null && request.auth.token.email_verified == true
+        && request.resource.data.uid == request.auth.uid && request.resource.data.estado == 'pendiente';
       allow update: if resource.data.estado == 'pendiente'
         && request.resource.data.estado in ['pagado', 'cancelado']
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado', 'comprobante', 'pagadoEn']);

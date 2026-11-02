@@ -3,7 +3,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, signOut,
+  sendPasswordResetEmail, sendEmailVerification, GoogleAuthProvider, signInWithPopup, signOut,
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import {
   getFirestore, collection, getDocs, getDoc, doc, addDoc, setDoc, query, where, serverTimestamp, writeBatch, onSnapshot,
@@ -18,12 +18,14 @@ const pagina = location.pathname.split('/').pop() || 'index.html';
 const sinConfig = () => { throw new Error('Firebase no está configurado: completa firebase-config.js.'); };
 
 // ---------- Sesión ----------
+// verificado: false mientras no abra el enlace del correo (las cuentas de Google ya vienen verificadas)
+const guardarCuenta = u => localStorage.setItem('c3d-cuenta', JSON.stringify({ uid: u.uid, correo: u.email, nombre: u.displayName || '', verificado: u.emailVerified }));
 let resolverSesion;
 const sesionLista = new Promise(r => resolverSesion = r);
 if (auth) onAuthStateChanged(auth, async u => {
   const antes = localStorage.getItem('c3d-cuenta');
   if (u) {
-    localStorage.setItem('c3d-cuenta', JSON.stringify({ uid: u.uid, correo: u.email, nombre: u.displayName || '' }));
+    guardarCuenta(u);
     // Perfil del cliente (colección "usuarios"), sin bloquear la página si falla
     setDoc(doc(db, 'usuarios', u.uid), { correo: u.email, nombre: u.displayName || '', ultimoAcceso: serverTimestamp() }, { merge: true }).catch(() => {});
   } else localStorage.removeItem('c3d-cuenta');
@@ -110,7 +112,7 @@ if (pagina === 'login.html') {
   };
   const intentar = async fn => {
     mostrar('');
-    try { if (!auth) sinConfig(); await fn(); location.href = destino; }
+    try { if (!auth) sinConfig(); await fn(); if (auth.currentUser.emailVerified) location.href = destino; else verSesion(auth.currentUser); }
     catch (e) { mostrar(MENSAJES[e.code] || e.message); }
   };
   $('#para-comprar').hidden = !sig;
@@ -124,7 +126,10 @@ if (pagina === 'login.html') {
   };
   $('#form-correo').addEventListener('submit', e => {
     e.preventDefault();
-    intentar(() => (creando ? createUserWithEmailAndPassword : signInWithEmailAndPassword)(auth, ...datos()));
+    intentar(async () => {
+      const r = await (creando ? createUserWithEmailAndPassword : signInWithEmailAndPassword)(auth, ...datos());
+      if (creando) await sendEmailVerification(r.user);
+    });
   });
   $('#btn-google').onclick = () => intentar(() => signInWithPopup(auth, new GoogleAuthProvider()));
   $('#olvide').onclick = async () => {
@@ -134,9 +139,22 @@ if (pagina === 'login.html') {
     catch (e) { mostrar(MENSAJES[e.code] || e.message); }
   };
   $('#salir').onclick = () => signOut(auth).then(() => location.reload());
-  sesionLista.then(u => {
-    if (!u) return;
+  const verSesion = u => {
     $('#entrar').hidden = true; $('#sesion').hidden = false;
     $('#titulo').textContent = 'Mi cuenta'; $('#quien').textContent = u.email;
-  });
+    $('#verificar').hidden = u.emailVerified;
+  };
+  const avisoVer = $('#verificar-msg');
+  $('#reenviar').onclick = async () => {
+    try { await sendEmailVerification(auth.currentUser); avisoVer.textContent = 'Listo, te enviamos otro enlace. Revisa también la carpeta de spam.'; }
+    catch (e) { avisoVer.textContent = MENSAJES[e.code] || e.message; }
+  };
+  $('#ya-verifique').onclick = async () => {
+    await auth.currentUser.reload();
+    if (!auth.currentUser.emailVerified) return avisoVer.textContent = 'Aún no aparece verificado. Abre el enlace del correo y vuelve a intentar.';
+    await auth.currentUser.getIdToken(true); // para que las reglas de Firestore vean el correo verificado
+    guardarCuenta(auth.currentUser);
+    location.href = destino;
+  };
+  sesionLista.then(u => { if (u) verSesion(u); });
 }

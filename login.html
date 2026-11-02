@@ -42,6 +42,14 @@
       <section class="card stack" id="sesion" aria-labelledby="t-ses" hidden>
         <h2 id="t-ses">Sesión iniciada</h2>
         <p>Entraste como <strong id="quien"></strong>.</p>
+        <div class="note" id="verificar" hidden>
+          <p><strong>Verifica tu correo para poder comprar.</strong> Te enviamos un enlace a tu correo; ábrelo y luego pulsa "Ya lo verifiqué".</p>
+          <p class="muted" id="verificar-msg" role="status" aria-live="polite"></p>
+          <div class="actions">
+            <button class="btn btn-primary" type="button" id="ya-verifique">Ya lo verifiqué</button>
+            <button class="btn btn-dashed" type="button" id="reenviar">Reenviar correo</button>
+          </div>
+        </div>
         <a class="btn btn-primary btn-block" href="seguimiento.html">Ver mis pedidos</a>
         <button class="btn btn-dashed btn-block" type="button" id="salir">Cerrar sesión</button>
       </section>
@@ -49,8 +57,8 @@
   </main>
   <footer class="site-footer">Capa3D · Impresión 3D a pedido · <a href="flujo.html">Flujo de usuario</a></footer>
 </div>
-<script src="productos.js?v=9"></script>
-<script src="app.js?v=9"></script>
-<script type="module" src="firebase.js?v=9"></script>
+<script src="productos.js?v=10"></script>
+<script src="app.js?v=10"></script>
+<script type="module" src="firebase.js?v=10"></script>
 </body>
 </html>
