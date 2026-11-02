@@ -150,26 +150,70 @@
     if (envio.ciudad && envio.ciudad !== 'Quito') { contra.disabled = true; if (pago.metodo === 'contra-entrega') pago.metodo = 'transferencia'; }
     radios.forEach(r => r.checked = r.value === pago.metodo);
     comp.value = pago.comp;
-    const actualizar = () => { const t = $('input[name=pago]:checked').value === 'transferencia'; banco.hidden = !t; comp.required = t; };
+    const billetera = $('#billetera'), revisar = $('form.main-col .btn-primary');
+    let cobro; // se crea una sola vez, al elegir la billetera
+    const pagarConBilletera = async () => {
+      const estado = $('#qr-estado');
+      if (pago.metodo === 'billetera' && pago.monto === +totales().total.toFixed(2)) {
+        estado.textContent = 'Ya pagaste ' + dinero(pago.monto) + ' con la billetera (comprobante ' + pago.comp + ').';
+        $('#qr-ayuda').hidden = true; revisar.hidden = false; return;
+      }
+      if (cobro) return;
+      cobro = 'creando';
+      const C3D = window.C3D || await new Promise(r => addEventListener('c3d-listo', () => r(window.C3D), { once: true }));
+      try { cobro = await C3D.crearCobro(+totales().total.toFixed(2)); }
+      catch (e) { cobro = null; estado.textContent = 'No se pudo generar el cobro: ' + e.message; return; }
+      const url = 'https://molyosky.github.io/billetera-qr/?c=' + cobro;
+      // En celular no se puede escanear la propia pantalla: se abre la billetera con un botón
+      if (matchMedia('(pointer: coarse)').matches) {
+        $('#abrir-billetera').href = url; $('#abrir-billetera').hidden = false;
+        $('#qr-ayuda').textContent = 'Toca el botón, confirma el pago en la billetera y vuelve a esta pestaña: avanzará sola.';
+      } else {
+        const q = qrcode(0, 'M'); q.addData(url); q.make();
+        $('#qr').innerHTML = q.createSvgTag(5, 8);
+      }
+      estado.textContent = 'Esperando el pago de ' + dinero(totales().total) + '…';
+      C3D.escucharCobro(cobro, c => {
+        if (c?.estado === 'pagado') {
+          estado.textContent = '¡Pago recibido! Continuando…';
+          guardar('c3d-pago', { metodo: 'billetera', comp: c.comprobante || cobro, monto: c.monto });
+          location.href = 'checkout-3-revision.html';
+        } else if (c?.estado === 'cancelado') {
+          estado.textContent = 'Cancelaste el pago en la billetera. Elige otra forma de pago o vuelve a intentarlo recargando la página.';
+        }
+      });
+    };
+    const actualizar = () => {
+      const m = $('input[name=pago]:checked').value, t = m === 'transferencia';
+      banco.hidden = !t; comp.required = t;
+      billetera.hidden = m !== 'billetera'; revisar.hidden = m === 'billetera'; // con billetera se avanza solo al pagar
+      if (m === 'billetera') pagarConBilletera();
+    };
     radios.forEach(r => r.addEventListener('change', actualizar));
     actualizar();
     $('form.main-col').addEventListener('submit', () => {
       const metodo = $('input[name=pago]:checked').value;
+      if (metodo === 'billetera') return; // ya quedó guardado al acreditarse
       guardar('c3d-pago', { metodo, comp: metodo === 'transferencia' ? comp.value.trim() : '' });
     });
   }
 
-  const nombrePago = m => m === 'contra-entrega' ? 'Pago contra entrega' : 'Transferencia bancaria';
+  const nombrePago = m => ({ 'contra-entrega': 'Pago contra entrega', billetera: 'Billetera QR' })[m] || 'Transferencia bancaria';
   if (pagina === 'checkout-3-revision.html') {
     const t = totales();
+    if (pago.metodo === 'billetera' && pago.monto !== +t.total.toFixed(2)) {
+      guardar('c3d-pago', { metodo: 'billetera', comp: '' });
+      location.replace('checkout-2-pago.html'); // el total cambió después de pagar
+    }
+    const pagado = pago.metodo === 'billetera';
     const datos = { 'Recibe': envio.nombre, 'Celular': envio.cel, 'Ciudad': envio.ciudad, 'Dirección': envio.dir,
       'Pago': nombrePago(pago.metodo), 'Comprobante': pago.comp, 'Unidades': t.unidades, 'Total': dinero(t.total) };
     $$('.main-col dt').forEach(dt => { if (dt.textContent in datos) dt.nextElementSibling.textContent = datos[dt.textContent] || '—'; });
     $('.main-col .btn-primary').addEventListener('click', e => {
       e.preventDefault();
       aviso({
-        modal: true, titulo: '¿Confirmar el pago?',
-        texto: `Se registrará tu pedido por ${dinero(t.total)} con ${nombrePago(pago.metodo).toLowerCase()}. Podrás cancelarlo mientras no empiece la impresión.`,
+        modal: true, titulo: pagado ? '¿Confirmar el pedido?' : '¿Confirmar el pago?',
+        texto: pagado ? `Tu pago de ${dinero(t.total)} con la billetera ya se acreditó. Se registrará tu pedido y podrás cancelarlo mientras no empiece la impresión.` : `Se registrará tu pedido por ${dinero(t.total)} con ${nombrePago(pago.metodo).toLowerCase()}. Podrás cancelarlo mientras no empiece la impresión.`,
         botones: [['Revisar de nuevo', 'btn-dashed'], ['Sí, confirmar', 'btn-primary', async () => {
           const pedido = { numero: 'C3D-' + String(Date.now() % 100000).padStart(5, '0'), fecha: Date.now(), ...t, items: carrito, entrega: envio, pago };
           try { await window.C3D.guardarPedido(pedido); }

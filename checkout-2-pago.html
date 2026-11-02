@@ -31,10 +31,18 @@
         <fieldset>
           <legend>Elige cómo pagar</legend>
           <div class="pay-group" style="margin-top:8px">
+            <label class="choice"><input type="radio" name="pago" value="billetera"> Billetera QR (pago al instante, simulación)</label>
             <label class="choice"><input type="radio" name="pago" value="transferencia" checked> Transferencia bancaria (subes el comprobante)</label>
             <label class="choice"><input type="radio" name="pago" value="contra-entrega"> Pago contra entrega (solo Quito)</label>
           </div>
         </fieldset>
+        <section class="bank" id="billetera" aria-label="Pago con billetera QR" hidden>
+          <h3 style="font-size:16px">Paga con tu billetera</h3>
+          <p class="muted" id="qr-ayuda">Escanea el código con la cámara de tu celular y confirma el pago. Esta página avanza sola cuando se acredita.</p>
+          <div class="qr" id="qr" aria-label="Código QR para pagar"></div>
+          <a class="btn btn-primary" id="abrir-billetera" target="_blank" rel="noopener" hidden>Pagar con Billetera QR</a>
+          <p id="qr-estado" role="status" aria-live="polite">Generando el código…</p>
+        </section>
         <section class="bank" id="banco" aria-label="Datos para la transferencia">
           <h3 style="font-size:16px">Transfiere el total a esta cuenta</h3>
           <dl>
@@ -64,15 +72,9 @@
   </main>
   <footer class="site-footer">Capa3D · Impresión 3D a pedido · <a href="flujo.html">Flujo de usuario</a></footer>
 </div>
-<script>
-  // El recuadro de transferencia solo se muestra si se elige transferencia
-  const banco = document.getElementById('banco');
-  document.querySelectorAll('input[name=pago]').forEach(r => r.addEventListener('change', () => {
-    banco.hidden = r.value !== 'transferencia' || !r.checked;
-  }));
-</script>
-<script src="productos.js?v=7"></script>
-<script src="app.js?v=7"></script>
-<script type="module" src="firebase.js?v=7"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="productos.js?v=8"></script>
+<script src="app.js?v=8"></script>
+<script type="module" src="firebase.js?v=8"></script>
 </body>
 </html>

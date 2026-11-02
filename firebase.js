@@ -6,7 +6,7 @@ import {
   sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, signOut,
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import {
-  getFirestore, collection, getDocs, getDoc, doc, addDoc, setDoc, query, where, serverTimestamp, writeBatch,
+  getFirestore, collection, getDocs, getDoc, doc, addDoc, setDoc, query, where, serverTimestamp, writeBatch, onSnapshot,
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
 
@@ -62,6 +62,17 @@ async function misPedidos() {
   return snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.fecha - a.fecha); // sin índice compuesto
 }
 
+// ---------- Cobro simulado con billetera QR (la billetera vive en otro sitio: molyosky.github.io/billetera-qr) ----------
+async function crearCobro(monto) {
+  if (!db) sinConfig();
+  const u = await sesionLista;
+  if (!u) throw new Error('Inicia sesión para pagar.');
+  const ref = await addDoc(collection(db, 'cobros'), { comercio: 'Capa3D', monto, uid: u.uid, estado: 'pendiente', creado: serverTimestamp() });
+  return ref.id;
+}
+// Avisa cada cambio del cobro (pendiente → pagado o cancelado); devuelve la función para dejar de escuchar
+const escucharCobro = (id, fn) => onSnapshot(doc(db, 'cobros', id), d => fn(d.data()));
+
 // ---------- Carga del catálogo (sembrar.html) ----------
 async function sembrar() {
   if (!db) sinConfig();
@@ -74,7 +85,7 @@ async function sembrar() {
   return window.C3D_PRODUCTOS.length;
 }
 
-window.C3D = { configurado, sesionLista, cargarProductos, cargarProducto, guardarPedido, misPedidos, sembrar };
+window.C3D = { configurado, sesionLista, cargarProductos, cargarProducto, guardarPedido, misPedidos, sembrar, crearCobro, escucharCobro };
 window.dispatchEvent(new Event('c3d-listo'));
 
 // ---------- Página de inicio de sesión ----------

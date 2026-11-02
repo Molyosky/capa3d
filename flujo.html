@@ -62,6 +62,9 @@ flowchart TD
   D2 -- "Transferencia" --> TRF["Datos bancarios y número de comprobante"]:::pantalla
   TRF -. "falta comprobante" .-> X4["Falta el comprobante"]:::error --> TRF
   D2 -- "Contra entrega (solo Quito)" --> REV
+  D2 -- "Billetera QR" --> QR["QR en PC o botón en celular"]:::pantalla
+  QR -- "paga en la billetera" --> REV
+  QR -. "cancela en la billetera" .-> X5["Pago cancelado"]:::error --> PAG
   TRF --> REV["Paso 3 de 3 · Revisión"]:::pantalla
   REV -- "editar el envío" --> ENV
   REV -- "cambiar el pago" --> PAG
@@ -145,8 +148,8 @@ flowchart TD
     catch { msg.textContent = 'Copia este enlace: ' + location.href; }
   };
 </script>
-<script src="productos.js?v=7"></script>
-<script src="app.js?v=7"></script>
-<script type="module" src="firebase.js?v=7"></script>
+<script src="productos.js?v=8"></script>
+<script src="app.js?v=8"></script>
+<script type="module" src="firebase.js?v=8"></script>
 </body>
 </html>

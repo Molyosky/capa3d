@@ -388,6 +388,7 @@ legend + * { clear: both; }
 .bank .row dt { color: var(--texto-2); }
 .bank .row dd { margin: 0; font-weight: 600; text-align: right; }
 .bank .row.strong dd { font-weight: 700; }
+.qr svg { display: block; width: 200px; height: auto; background: #fff; }
 .bank dl { margin: 0; display: flex; flex-direction: column; gap: 8px; }
 
 /* ---------- Confirmación ---------- */
