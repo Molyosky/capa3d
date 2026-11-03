@@ -152,13 +152,14 @@
     comp.value = pago.comp;
     const billetera = $('#billetera'), revisar = $('form.main-col button[type=submit]');
     let cobro; // se crea una sola vez, al elegir la billetera
+    let yaPagado = null; // cobro pagado en Firestore que aún no tiene pedido: no se vuelve a cobrar
     const pagarConBilletera = async () => {
       const estado = $('#qr-estado');
       if (pago.metodo === 'billetera' && pago.monto === +totales().total.toFixed(2)) {
         estado.textContent = 'Ya pagaste ' + dinero(pago.monto) + ' con la billetera (comprobante ' + pago.comp + ').';
         $('#qr-ayuda').hidden = true; revisar.hidden = false; return;
       }
-      if (cobro) return;
+      if (cobro || yaPagado) return; // nunca generar un segundo cobro si ya hay uno pagado
       cobro = 'creando';
       const C3D = window.C3D || await new Promise(r => addEventListener('c3d-listo', () => r(window.C3D), { once: true }));
       try { cobro = await C3D.crearCobro(+totales().total.toFixed(2)); }
@@ -194,6 +195,24 @@
     };
     radios.forEach(r => r.addEventListener('change', actualizar));
     actualizar();
+    // Si ya pagó con la billetera (aunque luego haya cambiado de método o de dispositivo), se recupera de la base
+    (window.C3D ? Promise.resolve(window.C3D) : new Promise(r => addEventListener('c3d-listo', () => r(window.C3D), { once: true })))
+      .then(C3D => C3D.cobroPagadoSinUsar()).then(c => {
+        if (!c) return;
+        yaPagado = c;
+        const total = +totales().total.toFixed(2), comprobante = c.comprobante || c.id;
+        radios.forEach(r => { r.checked = r.value === 'billetera'; r.disabled = r.value !== 'billetera'; });
+        billetera.hidden = false; $('#qr').replaceChildren(); $('#abrir-billetera').hidden = true; $('#otro-codigo').hidden = true;
+        if (c.monto === total) {
+          guardar('c3d-pago', { metodo: 'billetera', comp: comprobante, monto: c.monto, cobro: c.id });
+          Object.assign(pago, leer('c3d-pago', {}));
+          $('#qr-estado').textContent = 'Ya pagaste ' + dinero(c.monto) + ' con la billetera (comprobante ' + comprobante + '). Se usará ese pago; no se te cobrará otra vez.';
+          $('#qr-ayuda').hidden = true; revisar.hidden = false;
+        } else {
+          $('#qr-estado').textContent = 'Ya pagaste ' + dinero(c.monto) + ' (comprobante ' + comprobante + '), pero tu carrito ahora suma ' + dinero(total) + '. Deja el carrito como estaba para usar ese pago, o escríbenos desde Ayuda para el reembolso.';
+          $('#qr-ayuda').hidden = true; revisar.hidden = true;
+        }
+      }).catch(() => {});
     $('form.main-col').addEventListener('submit', () => {
       const metodo = $('input[name=pago]:checked').value;
       if (metodo === 'billetera') return; // ya quedó guardado al acreditarse
@@ -205,8 +224,7 @@
   if (pagina === 'checkout-3-revision.html') {
     const t = totales();
     if (pago.metodo === 'billetera' && pago.monto !== +t.total.toFixed(2)) {
-      guardar('c3d-pago', { metodo: 'billetera', comp: '' });
-      location.replace('checkout-2-pago.html'); // el total cambió después de pagar
+      location.replace('checkout-2-pago.html'); // el total cambió después de pagar: allí se explica (el pago no se borra)
     }
     const pagado = pago.metodo === 'billetera';
     const datos = { 'Recibe': envio.nombre, 'Celular': envio.cel, 'Ciudad': envio.ciudad, 'Dirección': envio.dir,

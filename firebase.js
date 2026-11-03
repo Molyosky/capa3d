@@ -75,6 +75,18 @@ async function crearCobro(monto) {
   const ref = await addDoc(collection(db, 'cobros'), { comercio: 'Capa3D', monto, uid: u.uid, estado: 'pendiente', creado: serverTimestamp() });
   return ref.id;
 }
+// Pago con billetera ya acreditado que todavía no se usó en un pedido: se respeta aunque el cliente cambie de método
+async function cobroPagadoSinUsar() {
+  const u = await sesionLista;
+  if (!db || !u) return null;
+  const snap = await getDocs(query(collection(db, 'cobros'), where('uid', '==', u.uid), where('estado', '==', 'pagado')));
+  for (const d of snap.docs) {
+    // Leer un pedido que no existe da permission-denied (la regla mira resource.data): eso significa "sin usar"
+    const usado = await getDoc(doc(db, 'pedidos', d.id)).then(p => p.exists(), () => false);
+    if (!usado) return { id: d.id, ...d.data() };
+  }
+  return null;
+}
 // Avisa cada cambio del cobro (pendiente → pagado o cancelado); devuelve la función para dejar de escuchar
 const escucharCobro = (id, fn) => onSnapshot(doc(db, 'cobros', id), d => fn(d.data()));
 
@@ -90,7 +102,7 @@ async function sembrar() {
   return window.C3D_PRODUCTOS.length;
 }
 
-window.C3D = { configurado, sesionLista, cargarProductos, cargarProducto, guardarPedido, misPedidos, sembrar, crearCobro, escucharCobro };
+window.C3D = { configurado, sesionLista, cargarProductos, cargarProducto, guardarPedido, misPedidos, sembrar, crearCobro, escucharCobro, cobroPagadoSinUsar };
 window.dispatchEvent(new Event('c3d-listo'));
 
 // ---------- Página de inicio de sesión ----------
