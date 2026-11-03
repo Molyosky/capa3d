@@ -557,3 +557,49 @@ dialog.toast::backdrop { background: rgba(0, 0, 0, .35); }
 .skip:focus { top: 8px; }
 main:focus { outline: none; }
 .breadcrumb a { display: inline-flex; align-items: center; min-height: 24px; }
+
+/* Iconografía: trazo 2 px, 24×24, color del texto (currentColor). Decorativos: van en ::before, el lector de pantalla lee solo el texto */
+:root {
+  --i-catalogo: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Crect%20x="3"%20y="3"%20width="7"%20height="7"%20rx="1"/%3E%3Crect%20x="14"%20y="3"%20width="7"%20height="7"%20rx="1"/%3E%3Crect%20x="3"%20y="14"%20width="7"%20height="7"%20rx="1"/%3E%3Crect%20x="14"%20y="14"%20width="7"%20height="7"%20rx="1"/%3E%3C/svg%3E");
+  --i-pedidos: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Cpath%20d="M21%208l-9-5-9%205v8l9%205%209-5z"/%3E%3Cpath%20d="M3%208l9%205%209-5M12%2013v8"/%3E%3C/svg%3E");
+  --i-ayuda: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Ccircle%20cx="12"%20cy="12"%20r="10"/%3E%3Cpath%20d="M9.1%209a3%203%200%200%201%205.8%201c0%202-3%202-3%204M12%2017.5h.01"/%3E%3C/svg%3E");
+  --i-usuario: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Ccircle%20cx="12"%20cy="8"%20r="4"/%3E%3Cpath%20d="M4%2021a8%208%200%200%201%2016%200"/%3E%3C/svg%3E");
+  --i-carrito: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Ccircle%20cx="9"%20cy="20"%20r="1.5"/%3E%3Ccircle%20cx="18"%20cy="20"%20r="1.5"/%3E%3Cpath%20d="M2%203h3l2.6%2012.5h11L21%207H6"/%3E%3C/svg%3E");
+  --i-buscar: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Ccircle%20cx="11"%20cy="11"%20r="7"/%3E%3Cpath%20d="M21%2021l-5-5"/%3E%3C/svg%3E");
+  --i-envio: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Cpath%20d="M1%205h13v11H1zM14%209h4l3%203v4h-7"/%3E%3Ccircle%20cx="5.5"%20cy="18"%20r="2"/%3E%3Ccircle%20cx="17.5"%20cy="18"%20r="2"/%3E%3C/svg%3E");
+  --i-pago: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Crect%20x="2"%20y="5"%20width="20"%20height="14"%20rx="2"/%3E%3Cpath%20d="M2%2010h20M6%2015h4"/%3E%3C/svg%3E");
+  --i-revision: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Ccircle%20cx="12"%20cy="12"%20r="10"/%3E%3Cpath%20d="M8%2012.5l3%203%205-6.5"/%3E%3C/svg%3E");
+  --i-qr: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Crect%20x="3"%20y="3"%20width="7"%20height="7"/%3E%3Crect%20x="14"%20y="3"%20width="7"%20height="7"/%3E%3Crect%20x="3"%20y="14"%20width="7"%20height="7"/%3E%3Cpath%20d="M14%2014h3v3h-3zM20%2014v3M14%2020h7"/%3E%3C/svg%3E");
+  --i-seguro: url("data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="%23000"%20stroke-width="2"%20stroke-linecap="round"%20stroke-linejoin="round"%3E%3Crect%20x="4"%20y="11"%20width="16"%20height="10"%20rx="2"/%3E%3Cpath%20d="M8%2011V7a4%204%200%200%201%208%200v4"/%3E%3C/svg%3E");
+}
+.i::before, .nav a::before, .steps li::before, label[for="q"]::before, .choice:has(input[value="billetera"])::before {
+  content: ''; display: inline-block; width: 1.15em; height: 1.15em; flex: none; vertical-align: -0.2em; margin-right: 6px;
+  background: currentColor; -webkit-mask: var(--icono) center / contain no-repeat; mask: var(--icono) center / contain no-repeat;
+}
+.nav a::before { margin-right: 0; }
+.nav a[href="index.html"] { --icono: var(--i-catalogo); }
+.nav a[href="seguimiento.html"] { --icono: var(--i-pedidos); }
+.nav a[href="ayuda.html"] { --icono: var(--i-ayuda); }
+.nav a[href^="login.html"] { --icono: var(--i-usuario); }
+.nav a.cart { --icono: var(--i-carrito); }
+label[for="q"] { --icono: var(--i-buscar); }
+.steps li:nth-child(1) { --icono: var(--i-envio); }
+.steps li:nth-child(2) { --icono: var(--i-pago); }
+.steps li:nth-child(3) { --icono: var(--i-revision); }
+.choice:has(input[value="billetera"]) { --icono: var(--i-qr); }
+.choice:has(input[value="billetera"])::before { order: 1; margin: 0 0 0 auto; }
+.i-catalogo { --icono: var(--i-catalogo); }
+.i-pedidos { --icono: var(--i-pedidos); }
+.i-ayuda { --icono: var(--i-ayuda); }
+.i-usuario { --icono: var(--i-usuario); }
+.i-carrito { --icono: var(--i-carrito); }
+.i-buscar { --icono: var(--i-buscar); }
+.i-envio { --icono: var(--i-envio); }
+.i-pago { --icono: var(--i-pago); }
+.i-revision { --icono: var(--i-revision); }
+.i-qr { --icono: var(--i-qr); }
+.i-seguro { --icono: var(--i-seguro); }
+.iconos { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+.iconos figure { margin: 0; width: 150px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; font-size: 13px; color: var(--texto-2); }
+.iconos .i::before { width: 32px; height: 32px; margin: 0; color: var(--texto); }
+.iconos code { font-size: 12px; }
