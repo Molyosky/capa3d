@@ -18,17 +18,27 @@ service cloud.firestore {
 
     // Cada cliente crea y ve solo sus pedidos; el estado lo cambia el administrador
     match /pedidos/{id} {
+      // Con billetera, el id del pedido es el del cobro: debe estar pagado, ser del mismo cliente y por el mismo total.
+      // Como "create" solo vale si el documento no existe, un cobro pagado sirve para un solo pedido.
       allow create: if request.auth != null && request.auth.token.email_verified == true
-        && request.resource.data.uid == request.auth.uid && request.resource.data.estado == 'Recibido';
+        && request.resource.data.uid == request.auth.uid && request.resource.data.estado == 'Recibido'
+        && request.resource.data.total > 0
+        && (request.resource.data.pago.metodo != 'billetera' || (
+          request.resource.data.pago.cobro == id
+          && get(/databases/$(database)/documents/cobros/$(id)).data.estado == 'pagado'
+          && get(/databases/$(database)/documents/cobros/$(id)).data.uid == request.auth.uid
+          && get(/databases/$(database)/documents/cobros/$(id)).data.monto == request.resource.data.total));
       allow read: if request.auth != null && (resource.data.uid == request.auth.uid || esAdmin());
       allow update, delete: if esAdmin();
     }
 
     // Cobro simulado: lo crea el cliente; la billetera (sin sesión) solo puede pasarlo de pendiente a pagado o cancelado
     match /cobros/{id} {
-      allow read: if true;
+      allow get: if true;   // la billetera abre un cobro por su id
+      allow list: if false; // nadie puede listar todos los cobros
       allow create: if request.auth != null && request.auth.token.email_verified == true
-        && request.resource.data.uid == request.auth.uid && request.resource.data.estado == 'pendiente';
+        && request.resource.data.uid == request.auth.uid && request.resource.data.estado == 'pendiente'
+        && request.resource.data.monto > 0;
       allow update: if resource.data.estado == 'pendiente'
         && request.resource.data.estado in ['pagado', 'cancelado']
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado', 'comprobante', 'pagadoEn']);

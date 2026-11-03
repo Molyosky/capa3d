@@ -177,7 +177,7 @@
       const dejar = C3D.escucharCobro(cobro, c => {
         if (c?.estado === 'pagado') {
           estado.textContent = '¡Pago recibido! Continuando…';
-          guardar('c3d-pago', { metodo: 'billetera', comp: c.comprobante || cobro, monto: c.monto });
+          guardar('c3d-pago', { metodo: 'billetera', comp: c.comprobante || cobro, monto: c.monto, cobro });
           location.href = 'checkout-3-revision.html';
         } else if (c?.estado === 'cancelado') {
           estado.textContent = 'Cancelaste el pago en la billetera. Elige otra forma de pago o genera un código nuevo.';

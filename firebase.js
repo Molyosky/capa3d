@@ -54,8 +54,11 @@ async function guardarPedido(pedido) {
   if (!db) sinConfig();
   const u = await sesionLista;
   if (!u) throw new Error('Inicia sesión para confirmar el pedido.');
-  const ref = await addDoc(collection(db, 'pedidos'), { ...pedido, uid: u.uid, correo: u.email, estado: 'Recibido', creado: serverTimestamp() });
-  return ref.id;
+  const datos = { ...pedido, uid: u.uid, correo: u.email, estado: 'Recibido', creado: serverTimestamp() };
+  // Con billetera el pedido usa el id del cobro: las reglas exigen que esté pagado y no se puede reutilizar
+  const cobro = pedido.pago?.metodo === 'billetera' && pedido.pago.cobro;
+  if (cobro) { await setDoc(doc(db, 'pedidos', cobro), datos); return cobro; }
+  return (await addDoc(collection(db, 'pedidos'), datos)).id;
 }
 async function misPedidos() {
   const u = await sesionLista;
