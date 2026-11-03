@@ -7,7 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="styles.css?v=19">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="styles.css?v=20">
 </head>
 <body>
 <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -27,13 +28,22 @@
     <h1>Finalizar compra</h1>
     <ol class="steps" aria-label="Pasos de la compra"><li class="current" aria-current="step">1. Envío</li><li>2. Pago</li><li>3. Revisión</li></ol>
     <div class="cols">
-      <form class="card card-strong stack main-col" onsubmit="location.href='checkout-2-pago.html';return false">
+      <form class="card card-strong stack main-col" onsubmit="if(!ubi.value){ubiError.hidden=false;mapa.scrollIntoView({block:'center'});return false}location.href='checkout-2-pago.html';return false">
         <h2>Paso 1 de 3: Datos de envío</h2>
         <p class="muted">Los campos con * son obligatorios.</p>
         <div class="control"><label for="nombre">Nombre completo *</label><input class="input" id="nombre" required autocomplete="name"></div>
         <div class="control"><label for="cel">Celular *</label><input class="input" id="cel" required inputmode="numeric" pattern="[0-9]{10}" placeholder="09XXXXXXXX" aria-describedby="cel-ayuda" autocomplete="tel"><p class="muted" id="cel-ayuda">10 dígitos. Lo usará el courier para coordinar la entrega.</p></div>
         <div class="control"><label for="ciudad">Ciudad *</label><select class="input" id="ciudad" required><option value="">Selecciona…</option><option>Quito</option><option>Guayaquil</option><option>Cuenca</option></select></div>
-        <div class="control"><label for="dir">Dirección *</label><textarea class="input" id="dir" required autocomplete="street-address"></textarea></div>
+        <div class="control"><label for="dir">Dirección *</label><textarea class="input" id="dir" required autocomplete="street-address" placeholder="Calle principal, número y calle secundaria"></textarea></div>
+        <div class="control">
+          <p><b id="ubi-t">Ubicación en el mapa *</b></p>
+          <p class="muted" id="ubi-ayuda">Toca el mapa o arrastra el pin hasta tu casa para que el courier llegue sin perderse.</p>
+          <button class="btn btn-dashed" type="button" id="mi-ubi">Usar mi ubicación actual</button>
+          <div id="mapa" role="application" aria-labelledby="ubi-t" aria-describedby="ubi-ayuda"></div>
+          <input type="hidden" id="ubi">
+          <p class="muted" id="ubi-estado" aria-live="polite">Aún no marcas tu ubicación.</p>
+          <p class="note error-box" id="ubiError" role="alert" hidden>Marca tu ubicación en el mapa antes de continuar.</p>
+        </div>
         <div class="actions">
           <a class="btn btn-dashed" href="carrito.html">Volver al carrito</a>
           <button class="btn btn-primary" type="submit">Continuar al pago</button>
@@ -51,8 +61,34 @@
   </main>
   <footer class="site-footer">Capa3D · Impresión 3D a pedido · <a href="flujo.html">Flujo de usuario</a></footer>
 </div>
-<script src="productos.js?v=19"></script>
-<script src="app.js?v=19"></script>
-<script type="module" src="firebase.js?v=19"></script>
+<script src="productos.js?v=20"></script>
+<script src="app.js?v=20"></script>
+<script type="module" src="firebase.js?v=20"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  // Mapa de OpenStreetMap: el pin guarda "lat,lng" en #ubi (app.js lo incluye en c3d-envio)
+  const centros = { Quito: [-0.1807, -78.4678], Guayaquil: [-2.1709, -79.9224], Cuenca: [-2.9001, -79.0059] };
+  const ubi = document.getElementById('ubi'), estado = document.getElementById('ubi-estado'), ciudad = document.getElementById('ciudad');
+  const m = L.map('mapa').setView(ubi.value ? ubi.value.split(',') : centros[ciudad.value] || centros.Quito, ubi.value ? 17 : 12);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(m);
+  let pin;
+  const poner = (ll, centrar) => {
+    pin ? pin.setLatLng(ll) : (pin = L.marker(ll, { draggable: true, keyboard: true, title: 'Tu entrega' }).addTo(m).on('dragend', () => poner(pin.getLatLng())));
+    const { lat, lng } = L.latLng(ll);
+    ubi.value = lat.toFixed(6) + ',' + lng.toFixed(6);
+    estado.textContent = 'Ubicación marcada (' + ubi.value + '). Puedes arrastrar el pin para ajustarla.';
+    document.getElementById('ubiError').hidden = true;
+    if (centrar) m.setView(ll, 17);
+  };
+  if (ubi.value) poner(ubi.value.split(','));
+  m.on('click', e => poner(e.latlng));
+  ciudad.addEventListener('change', () => { if (!pin && centros[ciudad.value]) m.setView(centros[ciudad.value], 12); });
+  document.getElementById('mi-ubi').onclick = () => {
+    if (!navigator.geolocation) return estado.textContent = 'Tu navegador no permite ubicación; marca el punto en el mapa.';
+    estado.textContent = 'Buscando tu ubicación…';
+    navigator.geolocation.getCurrentPosition(p => poner([p.coords.latitude, p.coords.longitude], true),
+      () => estado.textContent = 'No se pudo obtener tu ubicación (permiso negado). Marca el punto tocando el mapa.', { enableHighAccuracy: true, timeout: 10000 });
+  };
+</script>
 </body>
 </html>

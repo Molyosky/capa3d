@@ -135,7 +135,7 @@
   if (pagina.startsWith('checkout-') && !carrito.length) location.replace('carrito.html');
   else if (pagina.startsWith('checkout-') && !puedeComprar()) location.replace('login.html?next=' + pagina);
   const envio = leer('c3d-envio', {}), pago = leer('c3d-pago', { metodo: 'transferencia', comp: '' });
-  const campos = ['nombre', 'cel', 'ciudad', 'dir'];
+  const campos = ['nombre', 'cel', 'ciudad', 'dir', 'ubi'];
 
   if (pagina === 'checkout-1-envio.html') {
     campos.forEach(id => { if (envio[id]) $('#' + id).value = envio[id]; });
@@ -212,6 +212,7 @@
     const datos = { 'Recibe': envio.nombre, 'Celular': envio.cel, 'Ciudad': envio.ciudad, 'Dirección': envio.dir,
       'Pago': nombrePago(pago.metodo), 'Comprobante': pago.comp, 'Unidades': t.unidades, 'Total': dinero(t.total) };
     $$('.main-col dt').forEach(dt => { if (dt.textContent in datos) dt.nextElementSibling.textContent = datos[dt.textContent] || '—'; });
+    if (/^-?[\d.]+,-?[\d.]+$/.test(envio.ubi)) $('#ubi-rev').innerHTML = `<a href="https://www.openstreetmap.org/?mlat=${envio.ubi.split(',')[0]}&mlon=${envio.ubi.split(',')[1]}#map=18/${envio.ubi.replace(',', '/')}" target="_blank" rel="noopener">Ver en el mapa</a>`;
     $('.main-col .btn-primary').addEventListener('click', e => {
       e.preventDefault();
       aviso({
