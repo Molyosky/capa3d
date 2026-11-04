@@ -94,9 +94,9 @@
       estado.textContent = 'No se pudo usar tu ubicación: ' + por + (pin ? ' El pin ya marcado sirve.' : ' Marca el punto tocando el mapa.');
     };
     // Primero con GPS; si falla por tiempo o disponibilidad, se reintenta con la ubicación por red (wifi/IP)
-    navigator.geolocation.getCurrentPosition(ok, e => e.code === 1 ? fallo(e)
-      : navigator.geolocation.getCurrentPosition(ok, fallo, { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 }),
-      { enableHighAccuracy: true, timeout: 8000 });
+    navigator.geolocation.getCurrentPosition(ok, () => // Windows a veces responde "sin permiso" de forma pasajera: siempre se reintenta
+      navigator.geolocation.getCurrentPosition(ok, fallo, { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 }),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 });
   };
 </script>
 </body>
