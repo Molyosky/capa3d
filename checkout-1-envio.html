@@ -87,7 +87,7 @@
     if (!navigator.geolocation) return estado.textContent = 'Tu navegador no permite ubicación; marca el punto en el mapa.';
     estado.textContent = 'Buscando tu ubicación…';
     navigator.geolocation.getCurrentPosition(p => poner([p.coords.latitude, p.coords.longitude], true),
-      () => estado.textContent = 'No se pudo obtener tu ubicación (permiso negado). Marca el punto tocando el mapa.', { enableHighAccuracy: true, timeout: 10000 });
+      () => estado.textContent = (pin ? 'No se pudo usar tu ubicación (permiso negado), pero el pin ya marcado sirve. ' : 'No se pudo usar tu ubicación (permiso negado). Marca el punto tocando el mapa. ') + 'Para activarla: toca el candado junto a la dirección de la página → Ubicación → Permitir, y recarga.', { enableHighAccuracy: true, timeout: 10000 });
   };
 </script>
 </body>
