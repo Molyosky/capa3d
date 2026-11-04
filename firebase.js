@@ -81,12 +81,10 @@ async function cobroPagadoSinUsar() {
   const u = await sesionLista;
   if (!db || !u) return null;
   const snap = await getDocs(query(collection(db, 'cobros'), where('uid', '==', u.uid), where('estado', '==', 'pagado')));
-  for (const d of snap.docs) {
-    // Leer un pedido que no existe da permission-denied (la regla mira resource.data): eso significa "sin usar"
-    const usado = await getDoc(doc(db, 'pedidos', d.id)).then(p => p.exists(), () => false);
-    if (!usado) return { id: d.id, ...d.data() };
-  }
-  return null;
+  // Un cobro está usado si algún pedido del cliente lo nombra por id o por comprobante (pedidos antiguos solo guardaban el comprobante)
+  const usados = new Set((await misPedidos()).flatMap(p => [p.id, p.pago?.cobro, p.pago?.comp]).filter(Boolean));
+  const libre = snap.docs.find(d => !usados.has(d.id) && !usados.has(d.data().comprobante));
+  return libre ? { id: libre.id, ...libre.data() } : null;
 }
 // Avisa cada cambio del cobro (pendiente → pagado o cancelado); devuelve la función para dejar de escuchar
 const escucharCobro = (id, fn) => onSnapshot(doc(db, 'cobros', id), d => fn(d.data()));
