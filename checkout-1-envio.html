@@ -94,10 +94,11 @@
         2: 'tu equipo no pudo determinar dónde estás (en computadoras sin GPS pasa a menudo).', 3: 'tardó demasiado en responder.' }[e.code] || 'error desconocido.';
       estado.textContent = 'No se pudo usar tu ubicación: ' + por + (pin ? ' El pin ya marcado sirve.' : ' Marca el punto tocando el mapa.');
     };
-    // Primero con GPS; si falla por tiempo o disponibilidad, se reintenta con la ubicación por red (wifi/IP)
-    navigator.geolocation.getCurrentPosition(ok, () => // Windows a veces responde "sin permiso" de forma pasajera: siempre se reintenta
-      navigator.geolocation.getCurrentPosition(ok, fallo, { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 }),
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 });
+    // Windows a veces niega o tarda en la primera lectura y responde en la siguiente: hasta 4 intentos antes de mostrar error
+    const intentar = n => navigator.geolocation.getCurrentPosition(ok,
+      e => n < 4 ? setTimeout(() => intentar(n + 1), 1200) : fallo(e),
+      { enableHighAccuracy: n === 1, timeout: n === 1 ? 8000 : 15000, maximumAge: 600000 });
+    intentar(1);
   };
 </script>
 </body>
