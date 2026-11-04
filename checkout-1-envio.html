@@ -71,7 +71,7 @@
   const ubi = document.getElementById('ubi'), estado = document.getElementById('ubi-estado'), ciudad = document.getElementById('ciudad');
   const m = L.map('mapa').setView(ubi.value ? ubi.value.split(',') : centros[ciudad.value] || centros.Quito, ubi.value ? 17 : 12);
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(m);
-  let pin;
+  let pin, ultima; // ultima: última ubicación que dio el equipo en esta visita
   const poner = (ll, centrar) => {
     pin ? pin.setLatLng(ll) : (pin = L.marker(ll, { draggable: true, keyboard: true, title: 'Tu entrega' }).addTo(m).on('dragend', () => poner(pin.getLatLng())));
     const { lat, lng } = L.latLng(ll);
@@ -86,8 +86,9 @@
   document.getElementById('mi-ubi').onclick = () => {
     if (!navigator.geolocation) return estado.textContent = 'Tu navegador no permite ubicación; marca el punto en el mapa.';
     estado.textContent = 'Buscando tu ubicación…';
-    const ok = p => poner([p.coords.latitude, p.coords.longitude], true);
+    const ok = p => poner(ultima = [p.coords.latitude, p.coords.longitude], true);
     const fallo = e => {
+      if (ultima) return poner(ultima, true); // Windows niega pedidos seguidos: se usa la última lectura buena
       // 1: permiso (del sitio o de Windows/Android), 2: el equipo no sabe dónde está, 3: tardó demasiado
       const por = { 1: 'el navegador o el sistema no dio permiso. Revisa el candado junto a la dirección y que la ubicación del equipo esté activada (Windows: Configuración → Privacidad → Ubicación).',
         2: 'tu equipo no pudo determinar dónde estás (en computadoras sin GPS pasa a menudo).', 3: 'tardó demasiado en responder.' }[e.code] || 'error desconocido.';
