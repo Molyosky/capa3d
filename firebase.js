@@ -40,7 +40,8 @@ else resolverSesion(null);
 async function cargarProductos() {
   if (!db) return window.C3D_PRODUCTOS;
   try {
-    const snap = await getDocs(collection(db, 'productos'));
+    // Si Firestore tarda más de 5 s (red lenta), se muestra la lista local en vez de quedarse "Cargando"
+    const snap = await Promise.race([getDocs(collection(db, 'productos')), new Promise((_, no) => setTimeout(no, 5000))]);
     return snap.empty ? window.C3D_PRODUCTOS : snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch { return window.C3D_PRODUCTOS; } // sin conexión: lista local
 }
