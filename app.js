@@ -147,6 +147,8 @@
   if (pagina === 'checkout-2-pago.html') {
     const radios = $$('input[name=pago]'), comp = $('#comp'), banco = $('#banco');
     const contra = radios.find(r => r.value === 'contra-entrega');
+    // Un pago con billetera solo se respeta si Firestore confirma que sigue sin pedido (ver más abajo)
+    if (pago.metodo === 'billetera') { pago.metodo = 'transferencia'; pago.comp = ''; delete pago.monto; }
     if (envio.ciudad && envio.ciudad !== 'Quito') { contra.disabled = true; if (pago.metodo === 'contra-entrega') pago.metodo = 'transferencia'; }
     radios.forEach(r => r.checked = r.value === pago.metodo);
     comp.value = pago.comp;
@@ -242,6 +244,7 @@
           catch (err) { aviso({ titulo: 'No se pudo registrar el pedido', texto: err.message + ' Tu carrito sigue guardado.', botones: [['Cerrar', 'btn-primary']] }); return; }
           guardar('c3d-pedido', pedido);
           carrito = []; guardarCarrito();
+          guardar('c3d-pago', { metodo: 'transferencia', comp: '' }); // el pago ya quedó atado a este pedido
           location.href = 'confirmacion.html';
         }]],
       });
