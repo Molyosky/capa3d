@@ -252,13 +252,31 @@
   }
 
   // ---------- Confirmación y seguimiento: último pedido ----------
-  const pedido = leer('c3d-pedido', null);
-  if (pedido && (pagina === 'confirmacion.html' || pagina === 'seguimiento.html')) {
-    $$('strong, h1').forEach(el => el.textContent = el.textContent.replace('C3D-0142', pedido.numero));
-    const vals = { 'Subtotal': pedido.subtotal, 'Envío': pedido.envio, 'Total': pedido.total };
+  const pintarPedido = p => {
+    $$('strong, h1').forEach(el => el.textContent = el.textContent.replace(/C3D-[\w-]+/, p.numero));
+    const vals = { 'Subtotal': p.subtotal, 'Envío': p.envio, 'Total': p.total };
     $$('#det + dl dt').forEach(dt => { if (dt.textContent in vals) dt.nextElementSibling.textContent = dinero(vals[dt.textContent]); });
     const tl = $('.timeline');
-    if (tl) tl.innerHTML = lineaDeTiempo(pedido, Date.now());
+    if (tl) tl.innerHTML = lineaDeTiempo(p, Date.now());
+  };
+  const pedido = leer('c3d-pedido', null);
+  if (pedido && (pagina === 'confirmacion.html' || pagina === 'seguimiento.html')) pintarPedido(pedido);
+  // Mis pedidos: todos los del cliente desde Firestore (el último pedido ya no tapa a los anteriores)
+  if (pagina === 'seguimiento.html') {
+    (window.C3D ? Promise.resolve(window.C3D) : new Promise(r => addEventListener('c3d-listo', () => r(window.C3D), { once: true })))
+      .then(C3D => C3D.misPedidos()).then(lista => {
+        if (!lista.length) return;
+        const caja = document.createElement('div');
+        caja.className = 'control';
+        caja.innerHTML = '<label for="mis-pedidos">Tus pedidos (' + lista.length + ')</label><select class="input" id="mis-pedidos"></select>';
+        const sel = caja.querySelector('select');
+        lista.forEach((p, i) => sel.add(new Option(p.numero + ' · ' + new Date(p.fecha).toLocaleDateString('es-EC') + ' · ' + dinero(p.total), i)));
+        $('main h1').after(caja);
+        const ver = i => { pintarPedido(lista[i]); history.replaceState(null, '', '?n=' + encodeURIComponent(lista[i].numero)); };
+        const n = new URLSearchParams(location.search).get('n'), ini = Math.max(0, lista.findIndex(p => p.numero === n));
+        sel.value = ini; ver(ini);
+        sel.onchange = () => ver(+sel.value);
+      }).catch(() => {});
   }
 
   pintarResumen();
