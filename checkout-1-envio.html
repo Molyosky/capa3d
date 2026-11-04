@@ -86,8 +86,17 @@
   document.getElementById('mi-ubi').onclick = () => {
     if (!navigator.geolocation) return estado.textContent = 'Tu navegador no permite ubicación; marca el punto en el mapa.';
     estado.textContent = 'Buscando tu ubicación…';
-    navigator.geolocation.getCurrentPosition(p => poner([p.coords.latitude, p.coords.longitude], true),
-      () => estado.textContent = (pin ? 'No se pudo usar tu ubicación (permiso negado), pero el pin ya marcado sirve. ' : 'No se pudo usar tu ubicación (permiso negado). Marca el punto tocando el mapa. ') + 'Para activarla: toca el candado junto a la dirección de la página → Ubicación → Permitir, y recarga.', { enableHighAccuracy: true, timeout: 10000 });
+    const ok = p => poner([p.coords.latitude, p.coords.longitude], true);
+    const fallo = e => {
+      // 1: permiso (del sitio o de Windows/Android), 2: el equipo no sabe dónde está, 3: tardó demasiado
+      const por = { 1: 'el navegador o el sistema no dio permiso. Revisa el candado junto a la dirección y que la ubicación del equipo esté activada (Windows: Configuración → Privacidad → Ubicación).',
+        2: 'tu equipo no pudo determinar dónde estás (en computadoras sin GPS pasa a menudo).', 3: 'tardó demasiado en responder.' }[e.code] || 'error desconocido.';
+      estado.textContent = 'No se pudo usar tu ubicación: ' + por + (pin ? ' El pin ya marcado sirve.' : ' Marca el punto tocando el mapa.');
+    };
+    // Primero con GPS; si falla por tiempo o disponibilidad, se reintenta con la ubicación por red (wifi/IP)
+    navigator.geolocation.getCurrentPosition(ok, e => e.code === 1 ? fallo(e)
+      : navigator.geolocation.getCurrentPosition(ok, fallo, { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 }),
+      { enableHighAccuracy: true, timeout: 8000 });
   };
 </script>
 </body>
